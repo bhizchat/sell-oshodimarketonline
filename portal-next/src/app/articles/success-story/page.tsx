@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ArticleLayout from '@/components/articles/article-layout';
 
 export const metadata: Metadata = {
-  title: 'Success Story: From Stall to Scale - Strategic X',
+  title: 'Success Story: From Stall to Scale - Oshodi Market Online',
 };
 
 // Ported 1:1 (layout/copy) from article-success-story.html.
@@ -12,13 +12,13 @@ export default function SuccessStoryArticlePage() {
     <ArticleLayout
       tag="Success Story"
       title="From Stall to Scale"
-      meta="Apr 28, 2026 · 6 min read · Strategic X Team"
+      meta="Apr 28, 2026 · 6 min read · Oshodi Market Online Team"
       heroSrc="/assets/article-success-story.png"
-      heroAlt="Smiling vendor who grew her business with Strategic X"
+      heroAlt="Smiling vendor who grew her business with Oshodi Market Online"
     >
       <p>
         Three years ago, a single market stall was the entire business. Today, it supplies a dozen local retailers and ships orders
-        across the region. This is the story of how one local vendor used Strategic X to turn a small stall into a scaling business —
+        across the region. This is the story of how one local vendor used Oshodi Market Online to turn a small stall into a scaling business —
         and what other vendors can learn from it.
       </p>
 
@@ -30,12 +30,12 @@ export default function SuccessStoryArticlePage() {
 
       <blockquote>
         &quot;I knew my products were good. What I didn&apos;t have was a way for people outside my immediate area to find me.&quot; —
-        Vendor, Strategic X
+        Vendor, Oshodi Market Online
       </blockquote>
 
       <h2>The turning point: going online</h2>
       <p>
-        Setting up a digital shop on Strategic X took less than an hour. Product photos went up, prices were listed clearly, and for
+        Setting up a digital shop on Oshodi Market Online took less than an hour. Product photos went up, prices were listed clearly, and for
         the first time, the business had a presence that worked even when the stall was closed. Within the first month, online orders
         began arriving from parts of the city the vendor had never physically reached.
       </p>
@@ -68,15 +68,15 @@ export default function SuccessStoryArticlePage() {
       </ul>
 
       <p>
-        This is one story among hundreds of vendors building their businesses with Strategic X — proof that a local market stall and a
+        This is one story among hundreds of vendors building their businesses with Oshodi Market Online — proof that a local market stall and a
         scaling business aren&apos;t mutually exclusive.
       </p>
 
-      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f5f5f6] p-7 text-center">
-        <p className="mb-4 text-[#6b6f76]">Want a story like this to be yours? Start your own Strategic X shop today.</p>
+      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f8f9fa] p-7 text-center">
+        <p className="mb-4 text-[#6b7280]">Want a story like this to be yours? Start your own Oshodi Market Online shop today.</p>
         <Link
           href="/signup"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#0a0a0a] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#392065] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
         >
           Get Started
         </Link>

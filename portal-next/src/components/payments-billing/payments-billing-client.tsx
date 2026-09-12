@@ -78,18 +78,18 @@ export default function PaymentsBillingClient() {
   return (
     <>
       <div className="mb-6 flex items-center gap-2.5">
-        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b6f76]">
+        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1e8b4a] text-white">✓</span>
-          <span className="text-[#111113]">Choose Plan</span>
+          <span className="text-[#1d2734]">Choose Plan</span>
         </div>
         <div className="h-0.5 w-15 bg-[#1e8b4a]" />
-        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b6f76]">
+        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1e8b4a] text-white">2</span>
-          <span className="text-[#111113]">Payment Details</span>
+          <span className="text-[#1d2734]">Payment Details</span>
         </div>
         <div className="h-0.5 w-15 bg-[#e2e3e6]" />
-        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b6f76]">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#e5e6e8] text-[#6b6f76]">3</span>
+        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#e5e6e8] text-[#6b7280]">3</span>
           <span>Confirmation</span>
         </div>
       </div>
@@ -97,9 +97,9 @@ export default function PaymentsBillingClient() {
       <div className="grid items-start gap-5 grid-cols-[minmax(0,1.4fr)_minmax(0,2.4fr)] max-[780px]:grid-cols-1">
         <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-5.5 px-6 max-[780px]:order-2">
           <div className="mb-3.5 flex h-11.5 w-11.5 items-center justify-center rounded-xl bg-[#e5e6e8] text-[1.3rem]">🏬</div>
-          <div className="text-[0.76rem] text-[#6b6f76]">Seller Plan</div>
+          <div className="text-[0.76rem] text-[#6b7280]">Seller Plan</div>
           <div className="mt-0.5 text-[1.15rem] font-extrabold">Free Trial</div>
-          <div className="mb-4 mt-px text-[0.8rem] text-[#6b6f76]">for 1 month</div>
+          <div className="mb-4 mt-px text-[0.8rem] text-[#6b7280]">for 1 month</div>
 
           <ul className="mb-4.5 flex flex-col gap-2.5">
             {[
@@ -117,21 +117,21 @@ export default function PaymentsBillingClient() {
             ))}
           </ul>
 
-          <div className="mb-4 flex flex-col gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f5f5f6] p-3 px-3.5">
+          <div className="mb-4 flex flex-col gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] p-3 px-3.5">
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b6f76]">Trial Period</span>
+              <span className="text-[#6b7280]">Trial Period</span>
               <span className="font-bold">{dates?.period ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b6f76]">Starts</span>
+              <span className="text-[#6b7280]">Starts</span>
               <span className="font-bold">{dates?.starts ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b6f76]">First Billing Date</span>
+              <span className="text-[#6b7280]">First Billing Date</span>
               <span className="font-bold">{dates?.firstBilling ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b6f76]">Amount</span>
+              <span className="text-[#6b7280]">Amount</span>
               <span className="font-bold">₦4,000 / month</span>
             </div>
           </div>
@@ -149,17 +149,17 @@ export default function PaymentsBillingClient() {
             <Image src="/assets/lock.png" alt="" width={16} height={16} className="object-contain" />
             Payment Details
           </h2>
-          <div className="mb-5 mt-1.5 flex items-center gap-1.5 text-[0.74rem] text-[#6b6f76]">
+          <div className="mb-5 mt-1.5 flex items-center gap-1.5 text-[0.74rem] text-[#6b7280]">
             <Image src="/assets/lock.png" alt="" width={13} height={13} className="object-contain" />
             Your payment information is secure and encrypted.
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b6f76]" htmlFor="cardNumber">
+              <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b7280]" htmlFor="cardNumber">
                 Card Information
               </label>
-              <div className="flex items-center gap-2.5 rounded-[9px] border border-[#e2e3e6] bg-[#f5f5f6] px-3 focus-within:border-[#8a8d91]">
+              <div className="flex items-center gap-2.5 rounded-[9px] border border-[#e2e3e6] bg-[#f8f9fa] px-3 focus-within:border-[#6c5ce7]">
                 <Image src="/assets/credit-card.png" alt="" width={20} height={20} className="shrink-0 object-contain" />
                 <input
                   id="cardNumber"
@@ -169,7 +169,7 @@ export default function PaymentsBillingClient() {
                   required
                   value={cardNumber}
                   onChange={(e) => handleCardNumberChange(e.target.value)}
-                  className="min-w-0 flex-1 border-none bg-transparent py-2.75 text-[0.85rem] text-[#111113] outline-none"
+                  className="min-w-0 flex-1 border-none bg-transparent py-2.75 text-[0.85rem] text-[#1d2734] outline-none"
                 />
                 <span className="flex shrink-0 items-center gap-1.5">
                   <Image src="/assets/visa.png" alt="Visa" width={28} height={18} className="h-4.5 w-auto object-contain" />
@@ -180,7 +180,7 @@ export default function PaymentsBillingClient() {
 
             <div className="mb-4 grid grid-cols-2 gap-3.5 max-[780px]:grid-cols-1">
               <div>
-                <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b6f76]" htmlFor="cardExpiry">
+                <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b7280]" htmlFor="cardExpiry">
                   Expiry Date
                 </label>
                 <input
@@ -190,11 +190,11 @@ export default function PaymentsBillingClient() {
                   required
                   value={cardExpiry}
                   onChange={(e) => handleExpiryChange(e.target.value)}
-                  className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.75 text-[0.85rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+                  className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.75 text-[0.85rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b6f76]" htmlFor="cardCvv">
+                <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b7280]" htmlFor="cardCvv">
                   CVV
                 </label>
                 <input
@@ -205,13 +205,13 @@ export default function PaymentsBillingClient() {
                   required
                   value={cardCvv}
                   onChange={(e) => setCardCvv(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
-                  className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.75 text-[0.85rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+                  className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.75 text-[0.85rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
                 />
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b6f76]" htmlFor="cardholderName">
+              <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b7280]" htmlFor="cardholderName">
                 Cardholder Name
               </label>
               <input
@@ -220,12 +220,12 @@ export default function PaymentsBillingClient() {
                 required
                 value={cardholderName}
                 onChange={(e) => setCardholderName(e.target.value)}
-                className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.75 text-[0.85rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+                className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.75 text-[0.85rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
               />
             </div>
 
             <div className="mb-4">
-              <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b6f76]" htmlFor="billingAddress">
+              <label className="mb-1.5 block text-[0.78rem] font-bold text-[#6b7280]" htmlFor="billingAddress">
                 Billing Address
               </label>
               <input
@@ -234,16 +234,16 @@ export default function PaymentsBillingClient() {
                 required
                 value={billingAddress}
                 onChange={(e) => setBillingAddress(e.target.value)}
-                className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.75 text-[0.85rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+                className="w-full rounded-[9px] border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.75 text-[0.85rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
               />
-              <div className="mt-1.5 text-[0.72rem] text-[#6b6f76]">We&apos;ll send your receipt and payment updates to your account email.</div>
+              <div className="mt-1.5 text-[0.72rem] text-[#6b7280]">We&apos;ll send your receipt and payment updates to your account email.</div>
             </div>
 
-            <div className="my-5 mb-5.5 flex items-start gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f5f5f6] px-4 py-3.5">
-              <span className="shrink-0 text-[1rem] text-[#111113]">ℹ</span>
+            <div className="my-5 mb-5.5 flex items-start gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] px-4 py-3.5">
+              <span className="shrink-0 text-[1rem] text-[#1d2734]">ℹ</span>
               <div>
                 <div className="text-[0.84rem] font-bold">No Charge Due Now</div>
-                <div className="mt-0.75 text-[0.78rem] text-[#6b6f76]">
+                <div className="mt-0.75 text-[0.78rem] text-[#6b7280]">
                   After your free trial ends, you&apos;ll be automatically charged ₦4,000 every month.
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default function PaymentsBillingClient() {
             <div className="mt-1 flex items-center justify-between gap-3">
               <a
                 href="/dashboard"
-                className="inline-flex items-center gap-1.5 rounded-[9px] border border-[#e2e3e6] bg-white px-4.5 py-2.5 text-[0.82rem] font-bold text-[#111113] hover:border-[#8a8d91]"
+                className="inline-flex items-center gap-1.5 rounded-[9px] border border-[#e2e3e6] bg-white px-4.5 py-2.5 text-[0.82rem] font-bold text-[#1d2734] hover:border-[#6c5ce7]"
               >
                 ← Back
               </a>
@@ -273,9 +273,9 @@ export default function PaymentsBillingClient() {
                 {status === 'done' && '✓ Trial Started'}
               </button>
             </div>
-            <div className="mt-2.5 text-right text-[0.72rem] text-[#6b6f76]">
+            <div className="mt-2.5 text-right text-[0.72rem] text-[#6b7280]">
               By continuing, you agree to our{' '}
-              <a href="/terms" className="border-b border-[#e2e3e6] font-bold text-[#111113]">
+              <a href="/terms" className="border-b border-[#e2e3e6] font-bold text-[#1d2734]">
                 Terms &amp; Conditions
               </a>
             </div>

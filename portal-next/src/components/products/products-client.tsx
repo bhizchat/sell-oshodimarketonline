@@ -18,7 +18,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 const editInputClass =
-  'w-full rounded-lg border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.25 text-[0.86rem] max-md:text-[16px] text-[#111113] outline-none focus:border-[#8a8d91]';
+  'w-full rounded-lg border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.25 text-[0.86rem] max-md:text-[16px] text-[#1d2734] outline-none focus:border-[#6c5ce7]';
 
 type EditForm = {
   productName: string;
@@ -211,7 +211,7 @@ export default function ProductsClient({
 
         <a
           href="/add-product"
-          className="flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[10px] border border-[#e2e3e6] bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#0a0a0a] hover:bg-[#e5e6e8] max-md:w-full"
+          className="flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[10px] border border-[#e2e3e6] bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] hover:bg-[#e5e6e8] max-md:w-full"
         >
           + Add New Product
         </a>
@@ -219,13 +219,13 @@ export default function ProductsClient({
 
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <div className="relative min-w-55 flex-1">
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.82rem] text-[#6b6f76]">🔍</span>
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.82rem] text-[#6b7280]">🔍</span>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products by name, SKU or category..."
-            className="w-full rounded-[10px] border border-[#e2e3e6] bg-white py-2.5 pl-9 pr-3.5 text-[0.82rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+            className="w-full rounded-[10px] border border-[#e2e3e6] bg-white py-2.5 pl-9 pr-3.5 text-[0.82rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
           />
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function ProductsClient({
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="min-w-35 flex-1 cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b6f76] max-md:min-w-0 max-md:px-2 max-md:py-2.5 max-md:text-[0.72rem]"
+          className="min-w-35 flex-1 cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b7280] max-md:min-w-0 max-md:px-2 max-md:py-2.5 max-md:text-[0.72rem]"
         >
           <option value="">All Categories</option>
           {categories.map((c) => (
@@ -246,7 +246,7 @@ export default function ProductsClient({
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="min-w-35 flex-1 cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b6f76] max-md:min-w-0 max-md:px-2 max-md:py-2.5 max-md:text-[0.72rem]"
+          className="min-w-35 flex-1 cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b7280] max-md:min-w-0 max-md:px-2 max-md:py-2.5 max-md:text-[0.72rem]"
         >
           <option value="">All Status</option>
           <option value="published">Published</option>
@@ -255,7 +255,7 @@ export default function ProductsClient({
         <select
           value={stock}
           onChange={(e) => setStock(e.target.value)}
-          className="min-w-35 flex-1 cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b6f76] max-md:min-w-0 max-md:px-2 max-md:py-2.5 max-md:text-[0.72rem]"
+          className="min-w-35 flex-1 cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b7280] max-md:min-w-0 max-md:px-2 max-md:py-2.5 max-md:text-[0.72rem]"
         >
           <option value="">Stock Status</option>
           <option value="in-stock">In Stock</option>
@@ -269,13 +269,13 @@ export default function ProductsClient({
           <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
             <div className="text-[2rem]">🛍</div>
             <h3 className="text-[1rem] font-bold">{total === 0 ? 'No products yet' : 'No matching products'}</h3>
-            <p className="max-w-[360px] text-[0.82rem] text-[#6b6f76]">
+            <p className="max-w-[360px] text-[0.82rem] text-[#6b7280]">
               {total === 0
                 ? 'Start building your catalog by adding your first product. Your listings will appear here.'
                 : 'Try adjusting your search or filters.'}
             </p>
             {total === 0 && (
-              <a href="/add-product" className="mt-2 rounded-[10px] border border-[#e2e3e6] bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#0a0a0a] hover:bg-[#e5e6e8]">
+              <a href="/add-product" className="mt-2 rounded-[10px] border border-[#e2e3e6] bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] hover:bg-[#e5e6e8]">
                 + Add New Product
               </a>
             )}
@@ -286,7 +286,7 @@ export default function ProductsClient({
               <thead>
                 <tr>
                   {['Product', 'Category', 'Price', 'Stock', 'Status', ''].map((h) => (
-                    <th key={h} className="border-b border-[#e2e3e6] px-5 py-3.5 text-left text-[0.7rem] font-bold uppercase tracking-wide text-[#6b6f76]">
+                    <th key={h} className="border-b border-[#e2e3e6] px-5 py-3.5 text-left text-[0.7rem] font-bold uppercase tracking-wide text-[#6b7280]">
                       {h}
                     </th>
                   ))}
@@ -316,7 +316,7 @@ export default function ProductsClient({
                     <td className={`px-5 py-4 text-[0.84rem] ${i < filtered.length - 1 ? 'border-b border-[#e2e3e6]' : ''}`}>
                       <span
                         className={`inline-flex items-center rounded-full px-2.5 py-0.75 text-[0.7rem] font-bold ${
-                          p.status === 'published' ? 'bg-[#1e8b4a]/[0.14] text-[#1e8b4a]' : 'bg-[#c7c9cc]/30 text-[#6b6f76]'
+                          p.status === 'published' ? 'bg-[#1e8b4a]/[0.14] text-[#1e8b4a]' : 'bg-[#c7c9cc]/30 text-[#6b7280]'
                         }`}
                       >
                         {p.status === 'published' ? 'Published' : 'Draft'}
@@ -327,7 +327,7 @@ export default function ProductsClient({
                         type="button"
                         title="Edit product"
                         onClick={() => openEditModal(p)}
-                        className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[#e2e3e6] bg-[#e5e6e8] text-[0.86rem] text-[#6b6f76] hover:border-[#8a8d91] hover:bg-white hover:text-[#111113]"
+                        className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[#e2e3e6] bg-[#e5e6e8] text-[0.86rem] text-[#6b7280] hover:border-[#6c5ce7] hover:bg-white hover:text-[#1d2734]"
                       >
                         ✎
                       </button>
@@ -346,7 +346,7 @@ export default function ProductsClient({
             type="button"
             onClick={loadMore}
             disabled={loadingMore}
-            className="rounded-[10px] border border-[#e2e3e6] bg-white px-5 py-2.5 text-[0.82rem] font-extrabold text-[#0a0a0a] hover:bg-[#e5e6e8] disabled:opacity-50"
+            className="rounded-[10px] border border-[#e2e3e6] bg-white px-5 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] hover:bg-[#e5e6e8] disabled:opacity-50"
           >
             {loadingMore ? 'Loading…' : `Load More (${loadedCount} of ${totalCount})`}
           </button>
@@ -365,7 +365,7 @@ export default function ProductsClient({
             {editError && <div className="mb-3 text-[0.78rem] text-[#e08a8a]">{editError}</div>}
 
             <div className="mb-3.5">
-              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Product Name</label>
+              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Product Name</label>
               <input
                 type="text"
                 value={editForm.productName}
@@ -375,7 +375,7 @@ export default function ProductsClient({
             </div>
 
             <div className="mb-3.5">
-              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Category</label>
+              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Category</label>
               <select
                 value={editForm.category}
                 onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
@@ -391,7 +391,7 @@ export default function ProductsClient({
             </div>
 
             <div className="mb-3.5">
-              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Description</label>
+              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Description</label>
               <textarea
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
@@ -401,7 +401,7 @@ export default function ProductsClient({
 
             <div className="mb-3.5 grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Selling Price</label>
+                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Selling Price</label>
                 <input
                   type="number"
                   min="0"
@@ -411,7 +411,7 @@ export default function ProductsClient({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Stock Quantity</label>
+                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Stock Quantity</label>
                 <input
                   type="number"
                   min="0"
@@ -424,7 +424,7 @@ export default function ProductsClient({
 
             <div className="mb-4 grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Condition</label>
+                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Condition</label>
                 <select
                   value={editForm.condition}
                   onChange={(e) => setEditForm({ ...editForm, condition: e.target.value })}
@@ -436,7 +436,7 @@ export default function ProductsClient({
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Status</label>
+                <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Status</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
@@ -452,7 +452,7 @@ export default function ProductsClient({
               <button
                 type="button"
                 onClick={closeEditModal}
-                className="rounded-[10px] border border-[#e2e3e6] bg-transparent px-4 py-2.5 text-[0.82rem] font-bold text-[#6b6f76] hover:bg-[#e5e6e8] hover:text-[#111113]"
+                className="rounded-[10px] border border-[#e2e3e6] bg-transparent px-4 py-2.5 text-[0.82rem] font-bold text-[#6b7280] hover:bg-[#e5e6e8] hover:text-[#1d2734]"
               >
                 Cancel
               </button>
@@ -460,7 +460,7 @@ export default function ProductsClient({
                 type="button"
                 onClick={saveEdit}
                 disabled={saving}
-                className="rounded-[10px] border-none bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#0a0a0a] shadow-[0_0_0_1px_#e2e3e6] hover:bg-[#e5e6e8] disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-[10px] border-none bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] shadow-[0_0_0_1px_#e2e3e6] hover:bg-[#e5e6e8] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -478,9 +478,9 @@ function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: s
       <div className="mb-2.5 flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#e2e3e6] bg-[#e5e6e8] text-[0.9rem]">
         {icon}
       </div>
-      <div className="text-[0.72rem] text-[#6b6f76]">{label}</div>
+      <div className="text-[0.72rem] text-[#6b7280]">{label}</div>
       <div className="mt-0.5 text-[1.3rem] font-extrabold">{value}</div>
-      <div className="mt-1 text-[0.68rem] text-[#6b6f76]">{sub}</div>
+      <div className="mt-1 text-[0.68rem] text-[#6b7280]">{sub}</div>
     </div>
   );
 }

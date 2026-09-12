@@ -91,17 +91,17 @@ export default function StaffJoinPage() {
   if (checkingSession) return null;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f5f5f6] px-5 py-8">
+    <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa] px-5 py-8">
       <div className="w-full max-w-[420px] rounded-[18px] bg-white p-8.5 py-8.5 text-center shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
         <Image
-          src="/assets/sxlogo.png"
-          alt="Strategic X logo"
+          src="/assets/oshodi-logo.png"
+          alt="Oshodi Market Online logo"
           width={120}
           height={32}
           className="mx-auto mb-5.5 h-auto w-[120px] object-contain"
         />
         <div className="mb-1.5 text-[1.25rem] font-extrabold">Join as Staff or Manager</div>
-        <p className="mb-6.5 text-[0.85rem] text-[#6b6f76]">
+        <p className="mb-6.5 text-[0.85rem] text-[#6b7280]">
           Enter the invitation code you received from a shop owner.
         </p>
 
@@ -123,7 +123,7 @@ export default function StaffJoinPage() {
               placeholder="e.g. Tunde Adewale"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-[10px] border border-[#dcdde0] px-3.5 py-3 text-[0.9rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+              className="w-full rounded-[10px] border border-[#dcdde0] px-3.5 py-3 text-[0.9rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
             />
           </div>
           <div className="mb-4">
@@ -137,13 +137,13 @@ export default function StaffJoinPage() {
               placeholder="SX-XXXXXX"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value)}
-              className="w-full rounded-[10px] border border-[#dcdde0] px-3.5 py-3 font-mono text-[0.9rem] uppercase tracking-[0.06em] text-[#111113] outline-none focus:border-[#8a8d91]"
+              className="w-full rounded-[10px] border border-[#dcdde0] px-3.5 py-3 font-mono text-[0.9rem] uppercase tracking-[0.06em] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
             />
           </div>
           <button
             type="submit"
             disabled={submitting}
-            className="mt-1.5 w-full rounded-[10px] bg-[linear-gradient(180deg,#2b2b2d,#000000)] py-3.5 text-[0.9rem] font-extrabold tracking-[0.01em] text-white disabled:opacity-45"
+            className="mt-1.5 w-full rounded-[10px] bg-[linear-gradient(180deg,#4B2E83,#392065)] py-3.5 text-[0.9rem] font-extrabold tracking-[0.01em] text-white disabled:opacity-45"
           >
             {submitting ? 'Joining...' : 'Join Shop'}
           </button>

@@ -49,7 +49,7 @@ export default async function DashboardPage() {
     : shop.marketPlatform;
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a]">
+    <div className="flex min-h-screen bg-[#392065]">
       <Sidebar
         shopName={shop.shopName}
         shopMeta={shopMeta}
@@ -60,17 +60,17 @@ export default async function DashboardPage() {
         reviewsCount={stats?.reviewCount ?? 0}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col bg-[#f5f5f6] text-[#111113]">
+      <div className="flex min-w-0 flex-1 flex-col bg-[#f8f9fa] text-[#1d2734]">
         <Topbar firstName={firstName} profileInitial={firstName.charAt(0).toUpperCase() || 'U'} />
 
         <div className="min-w-0 flex-1 px-8 pb-12 pt-7 max-md:px-4.5 max-md:pb-24 max-md:pt-5.5">
           <h1 className="text-[1.5rem] font-extrabold">Welcome back, {firstName}! 👋</h1>
-          <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b6f76]">Here&apos;s what&apos;s happening with your shop today.</p>
+          <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b7280]">Here&apos;s what&apos;s happening with your shop today.</p>
 
           <div className="relative mb-5 rounded-[14px] border border-[#e2e3e6] bg-white p-4.5 px-5.5">
-            <div className="text-[0.74rem] text-[#6b6f76]">You are selling on</div>
+            <div className="text-[0.74rem] text-[#6b7280]">You are selling on</div>
             <div className="mt-0.5 text-[1.05rem] font-bold">{shop.marketPlatform}</div>
-            <a href="/onboarding-step2" className="mt-2.5 inline-block border-b border-[#8a8d91] text-[0.78rem] font-bold text-[#8a8d91]">
+            <a href="/onboarding-step2" className="mt-2.5 inline-block border-b border-[#6c5ce7] text-[0.78rem] font-bold text-[#6c5ce7]">
               Change Platform
             </a>
             {viewShopUrl && (
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
                 href={viewShopUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="float-right rounded-lg border border-white/[0.08] bg-[#f4b740] px-4 py-2 text-[#0a0a0a]"
+                className="float-right rounded-lg border border-white/[0.08] bg-[#f4b740] px-4 py-2 text-[#1d2734]"
               >
                 View Shop
               </a>
@@ -107,8 +107,8 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#e2e3e6] px-8 py-4.5 text-[0.74rem] text-[#6b6f76] max-md:mb-16 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-4.5">
-          <div>© 2026 Strategic X. All rights reserved.</div>
+        <div className="flex items-center justify-between border-t border-[#e2e3e6] px-8 py-4.5 text-[0.74rem] text-[#6b7280] max-md:mb-16 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-4.5">
+          <div>© 2026 Oshodi Market Online. All rights reserved.</div>
           <div className="flex gap-4.5">
             <a href="/terms">Terms &amp; Conditions</a>
             <a href="/privacy">Privacy Policy</a>

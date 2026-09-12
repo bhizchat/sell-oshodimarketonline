@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 // hero image through a few product screenshots every 4s with a quick
 // opacity fade, instead of showing a single static dashboard image.
 const IMAGES = [
-  { src: '/assets/dashboard-landing.png', alt: 'Strategic X vendor dashboard preview' },
-  { src: '/assets/sample-shop.png', alt: 'Sample Strategic X vendor shop page' },
-  { src: '/assets/sample-product.png', alt: 'Sample Strategic X product listing' },
+  { src: '/assets/dashboard-landing.png', alt: 'Oshodi Market Online vendor dashboard preview' },
+  { src: '/assets/sample-shop.png', alt: 'Sample Oshodi Market Online vendor shop page' },
+  { src: '/assets/sample-product.png', alt: 'Sample Oshodi Market Online product listing' },
 ];
 
 export default function HeroVisual() {

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ArticleLayout from '@/components/articles/article-layout';
 
 export const metadata: Metadata = {
-  title: '5 Ways to Grow Your Market Business - Strategic X',
+  title: '5 Ways to Grow Your Market Business - Oshodi Market Online',
 };
 
 // Ported 1:1 (layout/copy) from article-grow-your-market-business.html.
@@ -12,7 +12,7 @@ export default function GrowYourMarketBusinessArticlePage() {
     <ArticleLayout
       tag="Vendor Guide"
       title="5 Ways to Grow Your Market Business"
-      meta="May 20, 2026 · 5 min read · Strategic X Team"
+      meta="May 20, 2026 · 5 min read · Oshodi Market Online Team"
       heroSrc="/assets/article-grow-market-business.png"
       heroAlt="Vendor arranging colorful market goods"
     >
@@ -67,13 +67,13 @@ export default function GrowYourMarketBusinessArticlePage() {
         </li>
       </ul>
 
-      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f5f5f6] p-7 text-center">
-        <p className="mb-4 text-[#6b6f76]">
-          Ready to put these strategies to work? Create your digital shop with Strategic X and start reaching more customers today.
+      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f8f9fa] p-7 text-center">
+        <p className="mb-4 text-[#6b7280]">
+          Ready to put these strategies to work? Create your digital shop with Oshodi Market Online and start reaching more customers today.
         </p>
         <Link
           href="/signup"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#0a0a0a] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#392065] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
         >
           Get Started
         </Link>

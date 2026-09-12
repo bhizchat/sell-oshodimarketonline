@@ -40,25 +40,8 @@ const BOTTOM_NAV_ITEMS = NAV_ITEMS.slice(0, 4);
 // fixed bottom tab bar for quick access to the main sections.
 export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isStaff, role, reviewsCount = 0 }: SidebarProps) {
   const [supportOpen, setSupportOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
   const mobileOpen = useMobileNavOpen();
-
-  // Support & Help panel positioning depends on viewport: on mobile the
-  // sidebar drawer itself has a CSS transform (for the slide-in animation),
-  // which makes any `position: fixed` descendant resolve against the
-  // drawer's box instead of the real viewport. The static site worked
-  // around this by reparenting the panel to <body> right before it opens
-  // (sx-auth.js's wireSupportHelp); we do the same here via a React portal.
-  useEffect(() => {
-    const mobileQuery = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mobileQuery.matches);
-    function handleChange(e: MediaQueryListEvent) {
-      setIsMobile(e.matches);
-    }
-    mobileQuery.addEventListener('change', handleChange);
-    return () => mobileQuery.removeEventListener('change', handleChange);
-  }, []);
 
   // Close the drawer whenever the route changes (i.e. after tapping a nav
   // link) and on Escape, matching the static site's wireMobileSidebar().
@@ -102,26 +85,26 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-500 flex w-[230px] shrink-0 flex-col bg-[#1c1c1e] px-4.5 py-6 text-white shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-transform duration-250 ease-in-out max-md:overflow-y-auto md:static md:z-auto md:translate-x-0 md:overflow-visible md:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-500 flex w-[230px] shrink-0 flex-col bg-[linear-gradient(160deg,#e4d7fc_0%,#d2c2f8_100%)] px-4.5 py-6 text-[#1d2734] shadow-[0_0_40px_rgba(0,0,0,0.15)] transition-transform duration-250 ease-in-out max-md:overflow-y-auto md:static md:z-auto md:translate-x-0 md:overflow-visible md:shadow-none ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="mb-6.5 flex items-center">
-          <Image src="/assets/sxlogo.png" alt="Strategic X logo" width={130} height={34} className="h-auto w-[130px] object-contain" />
+          <Image src="/assets/oshodi-logo.png" alt="Oshodi Market Online logo" width={130} height={34} className="h-auto w-[130px] object-contain" />
         </div>
 
-      <div className="mb-5.5 flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-[#232326] px-3 py-2.5">
+      <div className="mb-5.5 flex items-center gap-2.5 rounded-xl border border-[#c7b8f0] bg-white/70 px-3 py-2.5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[9px] bg-[#e5e6e8]">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <span className="text-[0.9rem] font-extrabold text-[#0a0a0a]">{shopInitial}</span>
+            <span className="text-[0.9rem] font-extrabold text-[#1d2734]">{shopInitial}</span>
           )}
         </div>
         <div className="min-w-0">
           <div className="truncate text-[0.84rem] font-bold">{shopName}</div>
-          <div className="truncate text-[0.68rem] text-[#9a9ba0]">{shopMeta || '\u00A0'}</div>
+          <div className="truncate text-[0.68rem] text-[#6b7280]">{shopMeta || '\u00A0'}</div>
           <div className={`mt-1 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[0.66rem] font-bold ${statusClass}`}>
             {statusText}
           </div>
@@ -137,7 +120,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                 <Link
                   href={item.href}
                   className={`flex items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-[0.82rem] font-semibold ${
-                    isActive ? 'bg-white text-[#0a0a0a]' : 'text-[#c7c9cc] hover:bg-[#232326] hover:text-white'
+                    isActive ? 'bg-[#392065] text-white' : 'text-[#4B2E83] hover:bg-white/60 hover:text-[#392065]'
                   }`}
                 >
                   <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-gradient-to-br from-[#e5e6e8] to-[#c7c9cc]">
@@ -147,7 +130,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                   {item.badge && (
                     <span
                       className={`rounded-full px-1.75 py-0.25 text-[0.62rem] font-extrabold ${
-                        isActive ? 'bg-black text-white' : 'bg-[#8a8d91] text-[#0a0a0a]'
+                        isActive ? 'bg-white text-[#392065]' : 'bg-[#6c5ce7] text-white'
                       }`}
                     >
                       {reviewsCount}
@@ -164,7 +147,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
             <button
               type="button"
               onClick={() => setSupportOpen((v) => !v)}
-              className="flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-left text-[0.82rem] font-semibold text-[#c7c9cc] hover:bg-[#232326] hover:text-white"
+              className="flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-left text-[0.82rem] font-semibold text-[#4B2E83] hover:bg-white/60 hover:text-[#392065]"
             >
               <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-gradient-to-br from-[#e5e6e8] to-[#c7c9cc]">
                 <Image src="/assets/question.png" alt="" width={15} height={15} className="h-[15px] w-[15px] object-contain" />
@@ -185,7 +168,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                       &times;
                     </button>
                     <div className="text-[0.95rem] font-extrabold">Need more help?</div>
-                    <div className="mt-0.5 text-[0.72rem] text-[#6b6f76]">Our support team is here to assist you personally.</div>
+                    <div className="mt-0.5 text-[0.72rem] text-[#6b7280]">Our support team is here to assist you personally.</div>
                   </div>
 
                   <div className="flex gap-2.5">
@@ -194,7 +177,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-[0.82rem] font-bold">Chat with us</div>
-                      <div className="mt-0.5 text-[0.72rem] text-[#6b6f76]">Chat live with our support team in real-time.</div>
+                      <div className="mt-0.5 text-[0.72rem] text-[#6b7280]">Chat live with our support team in real-time.</div>
                       <a
                         href="https://wa.me/2349134333745"
                         target="_blank"
@@ -203,7 +186,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                       >
                         Start Live Chat
                       </a>
-                      <div className="mt-1.5 text-[0.66rem] text-[#6b6f76]">Available Mon - Sat, 8AM - 6PM</div>
+                      <div className="mt-1.5 text-[0.66rem] text-[#6b7280]">Available Mon - Sat, 8AM - 6PM</div>
                     </div>
                   </div>
 
@@ -213,7 +196,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-[0.82rem] font-bold">Email Support</div>
-                      <div className="mt-0.5 text-[0.72rem] text-[#6b6f76]">Send us an email and we&apos;ll get back to you.</div>
+                      <div className="mt-0.5 text-[0.72rem] text-[#6b7280]">Send us an email and we&apos;ll get back to you.</div>
                       <a href="mailto:victoredochie10@gmail.com" className="mt-1.5 inline-block border-b border-[#f4b740]/40 text-[0.78rem] font-bold text-[#f4b740]">
                         victoredochie10@gmail.com
                       </a>
@@ -226,7 +209,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-[0.82rem] font-bold">Call Us</div>
-                      <div className="mt-0.5 text-[0.72rem] text-[#6b6f76]">Speak with our support team directly.</div>
+                      <div className="mt-0.5 text-[0.72rem] text-[#6b7280]">Speak with our support team directly.</div>
                       <a href="tel:+2349134333745" className="mt-1.5 inline-block border-b border-[#f4b740]/40 text-[0.78rem] font-bold text-[#f4b740]">
                         +234 913 433 3745
                       </a>
@@ -235,26 +218,24 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                 </>
               );
 
-              if (isMobile) {
-                return createPortal(
-                  <>
-                    <div
-                      className="fixed inset-0 z-550 bg-black/60"
-                      onClick={() => setSupportOpen(false)}
-                      aria-hidden="true"
-                    />
-                    <div className="fixed left-1/2 top-1/2 z-560 flex max-h-[calc(100vh-40px)] w-[min(320px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col gap-4.5 overflow-y-auto rounded-[14px] border border-[#e2e3e6] bg-white p-5 text-[#111113] shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-                      {panelBody}
-                    </div>
-                  </>,
-                  document.body
-                );
-              }
-
-              return (
-                <div className="absolute bottom-0 left-[calc(100%+12px)] z-[300] flex w-[280px] flex-col gap-4 rounded-[14px] border border-[#e2e3e6] bg-white p-4 text-[#111113] shadow-[0_14px_34px_rgba(0,0,0,0.18)]">
-                  {panelBody}
-                </div>
+              // Always render as a centered, backdrop-dimmed modal via a
+              // portal straight to <body>. This avoids the old sidebar-
+              // anchored `position: absolute` popover, which could render at
+              // a stray screen position (overlapping dashboard content)
+              // whenever the sidebar was off-canvas/transformed or the
+              // mobile/desktop viewport check hadn't settled yet.
+              return createPortal(
+                <>
+                  <div
+                    className="fixed inset-0 z-550 bg-black/60"
+                    onClick={() => setSupportOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div className="fixed left-1/2 top-1/2 z-560 flex max-h-[calc(100vh-40px)] w-[min(340px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col gap-4.5 overflow-y-auto rounded-[14px] border border-[#e2e3e6] bg-white p-5 text-[#1d2734] shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+                    {panelBody}
+                  </div>
+                </>,
+                document.body
               );
             })()}
           </li>
@@ -265,7 +246,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-left text-[0.82rem] font-semibold text-[#e88888] hover:bg-[#e04b4b]/[0.14] hover:text-[#ff8080]"
+          className="flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-left text-[0.82rem] font-semibold text-[#c0392b] hover:bg-[#e04b4b]/[0.14] hover:text-[#a52f22]"
         >
           ➤ Log Out
         </button>
@@ -280,10 +261,10 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
               key={item.href}
               href={item.href}
               className={`relative flex flex-1 flex-col items-center gap-0.75 px-0.5 py-1 text-[0.62rem] font-bold ${
-                isActive ? 'text-[#111113]' : 'text-[#6b6f76]'
+                isActive ? 'text-[#1d2734]' : 'text-[#6b7280]'
               }`}
             >
-              <span className={`flex h-8.5 w-8.5 items-center justify-center rounded-[10px] ${isActive ? 'bg-[#0a0a0a]' : ''}`}>
+              <span className={`flex h-8.5 w-8.5 items-center justify-center rounded-[10px] ${isActive ? 'bg-[#392065]' : ''}`}>
                 <Image
                   src={item.icon}
                   alt=""
@@ -292,7 +273,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                   className={`h-4 w-4 object-contain ${isActive ? 'brightness-0 invert' : ''}`}
                 />
                 {item.badge && reviewsCount > 0 && (
-                  <span className="absolute -top-0.5 right-2.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#8a8d91] px-0.75 text-[0.55rem] font-extrabold text-white">
+                  <span className="absolute -top-0.5 right-2.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#6c5ce7] px-0.75 text-[0.55rem] font-extrabold text-white">
                     {reviewsCount}
                   </span>
                 )}
@@ -304,7 +285,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
         <button
           type="button"
           onClick={toggleMobileNav}
-          className="relative flex flex-1 flex-col items-center gap-0.75 px-0.5 py-1 text-[0.62rem] font-bold text-[#6b6f76]"
+          className="relative flex flex-1 flex-col items-center gap-0.75 px-0.5 py-1 text-[0.62rem] font-bold text-[#6b7280]"
         >
           <span className="flex h-8.5 w-8.5 items-center justify-center rounded-[10px] text-base">☰</span>
           <span>More</span>

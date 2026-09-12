@@ -32,7 +32,7 @@ const CATEGORY_OPTIONS = [
 // while keeping the smaller desktop size. Same fix used across the rest
 // of this codebase's mobile forms (see repo memory notes).
 const inputClass =
-  'w-full rounded-[10px] border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.5 text-[0.84rem] max-md:text-[16px] text-[#111113] outline-none focus:border-[#8a8d91] disabled:cursor-not-allowed disabled:opacity-60';
+  'w-full rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.5 text-[0.84rem] max-md:text-[16px] text-[#1d2734] outline-none focus:border-[#6c5ce7] disabled:cursor-not-allowed disabled:opacity-60';
 
 // Client Component: ported 1:1 from add-product.html's <form
 // id="addProductForm"> — Product Information, Product Images,
@@ -206,7 +206,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
         <div className="flex flex-col gap-5">
           <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-5.5 px-6">
             <div className="mb-1 flex items-center gap-2.5">
-              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#0a0a0a] text-[0.7rem] font-extrabold text-white">1</span>
+              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#392065] text-[0.7rem] font-extrabold text-white">1</span>
               <h2 className="text-[0.94rem] font-bold">Product Information</h2>
             </div>
 
@@ -224,7 +224,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                   onChange={(e) => setProductName(e.target.value)}
                   className={inputClass}
                 />
-                <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Choose a clear and descriptive name for your product.</div>
+                <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Choose a clear and descriptive name for your product.</div>
               </div>
               <div>
                 <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="productCategory">
@@ -246,7 +246,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                     </option>
                   ))}
                 </select>
-                <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Choose the category that best fits your product.</div>
+                <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Choose the category that best fits your product.</div>
               </div>
             </div>
 
@@ -272,11 +272,11 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                     </option>
                   ))}
                 </select>
-                <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Choose a subcategory to help buyers find this product faster.</div>
+                <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Choose a subcategory to help buyers find this product faster.</div>
               </div>
               <div>
                 <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="productBrand">
-                  Brand <span className="font-normal text-[#6b6f76]">(Optional)</span>
+                  Brand <span className="font-normal text-[#6b7280]">(Optional)</span>
                 </label>
                 <input
                   id="productBrand"
@@ -293,9 +293,9 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
               <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="productDescription">
                 Product Description <span className="text-[#e04b4b]">*</span>
               </label>
-              <div className="overflow-hidden rounded-[10px] border border-[#e2e3e6] bg-[#f5f5f6]">
+              <div className="overflow-hidden rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa]">
                 <div className="flex items-center gap-1 border-b border-[#e2e3e6] px-2.5 py-2">
-                  <select className="mr-1 rounded-md border border-[#e2e3e6] bg-transparent px-2 py-1 text-[0.74rem] text-[#6b6f76]" disabled>
+                  <select className="mr-1 rounded-md border border-[#e2e3e6] bg-transparent px-2 py-1 text-[0.74rem] text-[#6b7280]" disabled>
                     <option>Normal</option>
                   </select>
                   {['B', 'I', 'U', '\u2022\u2022\u2022', '\u2630', '\ud83d\udd17'].map((label) => (
@@ -303,7 +303,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                       key={label}
                       type="button"
                       disabled
-                      className="flex h-6.5 w-6.5 items-center justify-center rounded-md text-[0.8rem] text-[#6b6f76] disabled:cursor-default"
+                      className="flex h-6.5 w-6.5 items-center justify-center rounded-md text-[0.8rem] text-[#6b7280] disabled:cursor-default"
                     >
                       {label}
                     </button>
@@ -316,19 +316,19 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                   placeholder="Describe your product features, benefits and specifications..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="min-h-32.5 w-full resize-y border-none bg-transparent p-3.5 text-[0.84rem] max-md:text-[16px] text-[#111113] outline-none"
+                  className="min-h-32.5 w-full resize-y border-none bg-transparent p-3.5 text-[0.84rem] max-md:text-[16px] text-[#1d2734] outline-none"
                 />
-                <div className="px-3 py-1.5 text-right text-[0.7rem] text-[#6b6f76]">{description.length} / 1000</div>
+                <div className="px-3 py-1.5 text-right text-[0.7rem] text-[#6b7280]">{description.length} / 1000</div>
               </div>
             </div>
           </div>
 
           <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-5.5 px-6">
             <div className="mb-1 flex items-center gap-2.5">
-              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#0a0a0a] text-[0.7rem] font-extrabold text-white">2</span>
+              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#392065] text-[0.7rem] font-extrabold text-white">2</span>
               <h2 className="text-[0.94rem] font-bold">Product Images</h2>
             </div>
-            <div className="mb-4.5 mt-1 text-[0.76rem] text-[#6b6f76]">Upload clear images of your product. You can add up to 8 images.</div>
+            <div className="mb-4.5 mt-1 text-[0.76rem] text-[#6b7280]">Upload clear images of your product. You can add up to 8 images.</div>
 
             <input
               ref={fileInputRef}
@@ -350,16 +350,16 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                   e.preventDefault();
                   if (e.dataTransfer.files) addFiles(e.dataTransfer.files);
                 }}
-                className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#e2e3e6] bg-[#f5f5f6] px-5 py-8 text-center hover:border-[#8a8d91]"
+                className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#e2e3e6] bg-[#f8f9fa] px-5 py-8 text-center hover:border-[#6c5ce7]"
               >
                 <div className="mb-2.5 flex h-10.5 w-10.5 items-center justify-center rounded-full border border-[#e2e3e6] bg-white text-[1.1rem]">&#8593;</div>
                 <div className="text-[0.84rem] font-bold">Click to upload or drag and drop</div>
-                <div className="mt-0.75 text-[0.74rem] text-[#6b6f76]">PNG, JPG or WEBP (Max 5MB each)</div>
+                <div className="mt-0.75 text-[0.74rem] text-[#6b7280]">PNG, JPG or WEBP (Max 5MB each)</div>
               </div>
             ) : (
               <div className="grid grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2.5">
                 {imagePreviews.map((src, index) => (
-                  <div key={index} className="relative aspect-square overflow-hidden rounded-[10px] border border-[#e2e3e6] bg-[#f5f5f6]">
+                  <div key={index} className="relative aspect-square overflow-hidden rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt={`Product image ${index + 1}`} className="h-full w-full object-cover" />
                     <button
@@ -376,7 +376,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex aspect-square items-center justify-center rounded-[10px] border border-dashed border-[#e2e3e6] bg-[#f5f5f6] text-[1.6rem] font-light text-[#6b6f76] hover:border-[#8a8d91] hover:text-[#111113]"
+                    className="flex aspect-square items-center justify-center rounded-[10px] border border-dashed border-[#e2e3e6] bg-[#f8f9fa] text-[1.6rem] font-light text-[#6b7280] hover:border-[#6c5ce7] hover:text-[#1d2734]"
                   >
                     +
                   </button>
@@ -384,7 +384,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
               </div>
             )}
 
-            <div className="mt-3.5 flex flex-col gap-1 text-[0.76rem] text-[#6b6f76]">
+            <div className="mt-3.5 flex flex-col gap-1 text-[0.76rem] text-[#6b7280]">
               <div>
                 <span className="text-[#1e8b4a]">&#10003;</span> Use clear, high-quality images
               </div>
@@ -395,14 +395,14 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                 <span className="text-[#1e8b4a]">&#10003;</span> Image size ratio 1:1 is recommended
               </div>
             </div>
-            <div className="mt-2 text-right text-[0.72rem] text-[#6b6f76]">{imageFiles.length} / 8 images</div>
+            <div className="mt-2 text-right text-[0.72rem] text-[#6b7280]">{imageFiles.length} / 8 images</div>
           </div>
         </div>
 
         <div className="flex flex-col gap-5">
           <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-5.5 px-6">
             <div className="mb-4.5 flex items-center gap-2.5">
-              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#0a0a0a] text-[0.7rem] font-extrabold text-white">3</span>
+              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#392065] text-[0.7rem] font-extrabold text-white">3</span>
               <h2 className="text-[0.94rem] font-bold">Pricing &amp; Stock</h2>
             </div>
 
@@ -425,7 +425,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
 
             <div className="mb-4">
               <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="comparePrice">
-                Compare at Price <span className="font-normal text-[#6b6f76]">(Optional)</span>
+                Compare at Price <span className="font-normal text-[#6b7280]">(Optional)</span>
               </label>
               <input
                 id="comparePrice"
@@ -437,7 +437,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                 onChange={(e) => setComparePrice(e.target.value)}
                 className={inputClass}
               />
-              <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Leave empty if not on sale</div>
+              <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Leave empty if not on sale</div>
             </div>
 
             <div className="mb-4">
@@ -455,12 +455,12 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                 onChange={(e) => setStockQuantity(e.target.value)}
                 className={inputClass}
               />
-              <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Number of items available in stock</div>
+              <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Number of items available in stock</div>
             </div>
 
             <div>
               <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="productSku">
-                SKU <span className="font-normal text-[#6b6f76]">(Optional)</span>
+                SKU <span className="font-normal text-[#6b7280]">(Optional)</span>
               </label>
               <input
                 id="productSku"
@@ -470,13 +470,13 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                 onChange={(e) => setSku(e.target.value)}
                 className={inputClass}
               />
-              <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Unique identifier for your product</div>
+              <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Unique identifier for your product</div>
             </div>
           </div>
 
           <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-5.5 px-6">
             <div className="mb-4.5 flex items-center gap-2.5">
-              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#0a0a0a] text-[0.7rem] font-extrabold text-white">4</span>
+              <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-[#392065] text-[0.7rem] font-extrabold text-white">4</span>
               <h2 className="text-[0.94rem] font-bold">Additional Details</h2>
             </div>
 
@@ -498,7 +498,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
 
             <div className="mb-4">
               <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="productWarranty">
-                Warranty <span className="font-normal text-[#6b6f76]">(Optional)</span>
+                Warranty <span className="font-normal text-[#6b7280]">(Optional)</span>
               </label>
               <input
                 id="productWarranty"
@@ -512,13 +512,13 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
 
             <div>
               <label className="mb-1.5 block text-[0.78rem] font-semibold" htmlFor="productTagsEntry">
-                Product Tags <span className="font-normal text-[#6b6f76]">(Optional)</span>
+                Product Tags <span className="font-normal text-[#6b7280]">(Optional)</span>
               </label>
-              <div className="flex flex-wrap items-center gap-1.5 rounded-[10px] border border-[#e2e3e6] bg-[#f5f5f6] px-2.5 py-2">
+              <div className="flex flex-wrap items-center gap-1.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] px-2.5 py-2">
                 {tags.map((tag, index) => (
                   <span key={tag} className="flex items-center gap-1.5 rounded-full border border-[#e2e3e6] bg-white px-2.5 py-0.75 text-[0.74rem] font-semibold">
                     {tag}
-                    <button type="button" onClick={() => removeTag(index)} aria-label="Remove tag" className="text-[0.8rem] leading-none text-[#6b6f76] hover:text-[#111113]">
+                    <button type="button" onClick={() => removeTag(index)} aria-label="Remove tag" className="text-[0.8rem] leading-none text-[#6b7280] hover:text-[#1d2734]">
                       &times;
                     </button>
                   </span>
@@ -530,10 +530,10 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
                   value={tagEntry}
                   onChange={(e) => setTagEntry(e.target.value)}
                   onKeyDown={handleTagKeyDown}
-                  className="min-w-25 flex-1 border-none bg-transparent py-1 text-[0.84rem] max-md:text-[16px] text-[#111113] outline-none"
+                  className="min-w-25 flex-1 border-none bg-transparent py-1 text-[0.84rem] max-md:text-[16px] text-[#1d2734] outline-none"
                 />
               </div>
-              <div className="mt-1.25 text-[0.7rem] text-[#6b6f76]">Add relevant tags to help customers find your product.</div>
+              <div className="mt-1.25 text-[0.7rem] text-[#6b7280]">Add relevant tags to help customers find your product.</div>
             </div>
           </div>
         </div>
@@ -544,7 +544,7 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 max-md:flex-col-reverse max-md:items-stretch">
         <a
           href="/products"
-          className="flex items-center justify-center gap-2 rounded-[10px] border border-[#e2e3e6] bg-transparent px-4.5 py-2.5 text-[0.82rem] font-bold text-[#6b6f76] hover:bg-[#e5e6e8] hover:text-[#111113]"
+          className="flex items-center justify-center gap-2 rounded-[10px] border border-[#e2e3e6] bg-transparent px-4.5 py-2.5 text-[0.82rem] font-bold text-[#6b7280] hover:bg-[#e5e6e8] hover:text-[#1d2734]"
         >
           &#10005; Cancel
         </a>
@@ -553,14 +553,14 @@ export default function AddProductClient({ shopId }: { shopId: string | null }) 
             type="button"
             disabled={submitting !== null}
             onClick={() => saveProduct('draft')}
-            className="flex items-center justify-center gap-2 rounded-[10px] border border-[#e2e3e6] bg-transparent px-4.5 py-2.5 text-[0.82rem] font-bold text-[#6b6f76] hover:bg-[#e5e6e8] hover:text-[#111113] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-[10px] border border-[#e2e3e6] bg-transparent px-4.5 py-2.5 text-[0.82rem] font-bold text-[#6b7280] hover:bg-[#e5e6e8] hover:text-[#1d2734] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting === 'draft' ? 'Saving…' : <>&#128190; Save as Draft</>}
           </button>
           <button
             type="submit"
             disabled={submitting !== null}
-            className="flex items-center justify-center gap-2 rounded-[10px] border border-[#0a0a0a] bg-[#0a0a0a] px-4.5 py-2.5 text-[0.82rem] font-extrabold text-white hover:bg-[#1c1c1e] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-[10px] border border-[#4B2E83] bg-[#392065] px-4.5 py-2.5 text-[0.82rem] font-extrabold text-white hover:bg-[#2d1850] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting === 'published' ? 'Publishing…' : <>&#10003; Publish Product</>}
           </button>

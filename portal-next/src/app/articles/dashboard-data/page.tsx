@@ -3,8 +3,8 @@ import Link from 'next/link';
 import ArticleLayout from '@/components/articles/article-layout';
 
 export const metadata: Metadata = {
-  title: 'Reading Your Dashboard: Turn Data Into Sales Decisions - Strategic X',
-  description: "A simple guide to using your Strategic X dashboard stats to make smarter decisions for your shop.",
+  title: 'Reading Your Dashboard: Turn Data Into Sales Decisions - Oshodi Market Online',
+  description: "A simple guide to using your Oshodi Market Online dashboard stats to make smarter decisions for your shop.",
 };
 
 // Ported 1:1 (layout/copy) from article-dashboard-data.html.
@@ -13,12 +13,12 @@ export default function DashboardDataArticlePage() {
     <ArticleLayout
       tag="Guides"
       title="Reading Your Dashboard: Turn Data Into Sales Decisions"
-      meta="Jun 2, 2026 · 5 min read · Strategic X Team"
+      meta="Jun 2, 2026 · 5 min read · Oshodi Market Online Team"
       heroSrc="/assets/dashboard-landing.png"
-      heroAlt="Strategic X vendor dashboard showing shop views, calls, WhatsApp messages and rating"
+      heroAlt="Oshodi Market Online vendor dashboard showing shop views, calls, WhatsApp messages and rating"
     >
       <p>
-        Every time a customer views your shop, calls, or messages you on WhatsApp, your Strategic X dashboard quietly records it. Most
+        Every time a customer views your shop, calls, or messages you on WhatsApp, your Oshodi Market Online dashboard quietly records it. Most
         vendors check these numbers out of curiosity — but the vendors who grow fastest treat them as a decision-making tool. Here&apos;s
         how to actually use what your dashboard is telling you.
       </p>
@@ -37,7 +37,7 @@ export default function DashboardDataArticlePage() {
         listings.
       </p>
 
-      <blockquote>&quot;Views tell you people are looking. Messages tell you people are ready to buy.&quot; — Strategic X Team</blockquote>
+      <blockquote>&quot;Views tell you people are looking. Messages tell you people are ready to buy.&quot; — Oshodi Market Online Team</blockquote>
 
       <h2>Products &amp; Active Listings: don&apos;t let your shelf go stale</h2>
       <p>
@@ -71,11 +71,11 @@ export default function DashboardDataArticlePage() {
         reviewing it each week can turn guesswork into a plan.
       </p>
 
-      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f5f5f6] p-7 text-center">
-        <p className="mb-4 text-[#6b6f76]">Ready to start tracking your own shop&apos;s growth? Set up your Strategic X dashboard today.</p>
+      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f8f9fa] p-7 text-center">
+        <p className="mb-4 text-[#6b7280]">Ready to start tracking your own shop&apos;s growth? Set up your Oshodi Market Online dashboard today.</p>
         <Link
           href="/signup"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#0a0a0a] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#392065] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
         >
           Get Started
         </Link>

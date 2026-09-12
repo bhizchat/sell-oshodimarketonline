@@ -3,7 +3,7 @@ import Link from 'next/link';
 import ArticleLayout from '@/components/articles/article-layout';
 
 export const metadata: Metadata = {
-  title: 'Going Digital: Why It Matters - Strategic X',
+  title: 'Going Digital: Why It Matters - Oshodi Market Online',
 };
 
 // Ported 1:1 (layout/copy) from article-going-digital.html.
@@ -12,7 +12,7 @@ export default function GoingDigitalArticlePage() {
     <ArticleLayout
       tag="Industry Insight"
       title="Going Digital: Why It Matters"
-      meta="May 10, 2026 · 4 min read · Strategic X Team"
+      meta="May 10, 2026 · 4 min read · Oshodi Market Online Team"
       heroSrc="/assets/article-going-digital.png"
       heroAlt="Vendor using a phone to manage an online shop"
     >
@@ -45,7 +45,7 @@ export default function GoingDigitalArticlePage() {
 
       <h2>It&apos;s more accessible than ever</h2>
       <p>
-        Going digital used to mean hiring developers or building a website from scratch. Platforms like Strategic X remove that barrier
+        Going digital used to mean hiring developers or building a website from scratch. Platforms like Oshodi Market Online remove that barrier
         entirely — vendors can set up a shop, list products, and start selling online in minutes, with no technical experience required.
       </p>
 
@@ -61,11 +61,11 @@ export default function GoingDigitalArticlePage() {
         </li>
       </ul>
 
-      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f5f5f6] p-7 text-center">
-        <p className="mb-4 text-[#6b6f76]">Take the first step toward going digital — set up your Strategic X shop in minutes.</p>
+      <div className="mt-10 rounded-[14px] border border-[#dcdde0] bg-[#f8f9fa] p-7 text-center">
+        <p className="mb-4 text-[#6b7280]">Take the first step toward going digital — set up your Oshodi Market Online shop in minutes.</p>
         <Link
           href="/signup"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#0a0a0a] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[#392065] px-6 py-3 text-[0.9rem] font-bold whitespace-nowrap text-white hover:bg-[#222225]"
         >
           Get Started
         </Link>

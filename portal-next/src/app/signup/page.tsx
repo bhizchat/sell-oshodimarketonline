@@ -65,14 +65,14 @@ export default function SignupPage() {
       <section className="flex flex-1 items-center justify-center bg-white px-5 py-8 sm:px-8 sm:py-10">
         <div className="w-full max-w-[360px]">
           <div className="mb-2 flex flex-col items-center gap-2.5">
-            <Image src="/assets/sxlogo.png" alt="Strategic X logo" width={220} height={56} className="h-auto w-45 object-contain sm:w-[220px]" />
+            <Image src="/assets/oshodi-logo.png" alt="Oshodi Market Online logo" width={220} height={56} className="h-auto w-45 object-contain sm:w-[220px]" />
           </div>
 
           <div className="mb-7 text-center">
-            <h2 className="text-[1.25rem] font-extrabold">
-              Create your Strategic<span className="text-[#8a8d91]"> X</span> account
+            <h2 className="text-[1.25rem] font-extrabold text-[#1d2734]">
+              Create your Oshodi<span className="text-[#6c5ce7]"> Market Online</span> account
             </h2>
-            <p className="mt-1 text-[0.82rem] text-[#6b6f76]">Sign up to start selling or shopping local</p>
+            <p className="mt-1 text-[0.82rem] text-[#6b7280]">Sign up to start selling or shopping local</p>
           </div>
 
           {success ? (
@@ -99,7 +99,7 @@ export default function SignupPage() {
                     placeholder="Full name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-4 text-[0.88rem] text-[#111113] outline-none transition-colors focus:border-[#8a8d91] focus:bg-white"
+                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-4 text-[0.88rem] text-[#1d2734] outline-none transition-colors focus:border-[#6c5ce7] focus:bg-white"
                   />
                 </div>
 
@@ -114,7 +114,7 @@ export default function SignupPage() {
                     placeholder="Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-4 text-[0.88rem] text-[#111113] outline-none transition-colors focus:border-[#8a8d91] focus:bg-white"
+                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-4 text-[0.88rem] text-[#1d2734] outline-none transition-colors focus:border-[#6c5ce7] focus:bg-white"
                   />
                 </div>
 
@@ -130,7 +130,7 @@ export default function SignupPage() {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-[42px] text-[0.88rem] text-[#111113] outline-none transition-colors focus:border-[#8a8d91] focus:bg-white"
+                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-[42px] text-[0.88rem] text-[#1d2734] outline-none transition-colors focus:border-[#6c5ce7] focus:bg-white"
                   />
                   <button
                     type="button"
@@ -154,25 +154,25 @@ export default function SignupPage() {
                     placeholder="Confirm password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-4 text-[0.88rem] text-[#111113] outline-none transition-colors focus:border-[#8a8d91] focus:bg-white"
+                    className="w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 pl-[42px] pr-4 text-[0.88rem] text-[#1d2734] outline-none transition-colors focus:border-[#6c5ce7] focus:bg-white"
                   />
                 </div>
 
-                <label className="mb-4.5 flex items-start gap-2 text-[0.78rem] text-[#6b6f76]">
+                <label className="mb-4.5 flex items-start gap-2 text-[0.78rem] text-[#6b7280]">
                   <input
                     type="checkbox"
                     required
                     checked={agreeTerms}
                     onChange={(e) => setAgreeTerms(e.target.checked)}
-                    className="mt-0.5 accent-black"
+                    className="mt-0.5 accent-[#4B2E83]"
                   />
                   <span>
                     I agree to the{' '}
-                    <Link href="/terms" className="font-bold text-[#111113]">
+                    <Link href="/terms" className="font-bold text-[#4B2E83]">
                       Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/privacy" className="font-bold text-[#111113]">
+                    <Link href="/privacy" className="font-bold text-[#4B2E83]">
                       Privacy Policy
                     </Link>
                   </span>
@@ -181,20 +181,20 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-[10px] bg-gradient-to-b from-[#2b2b2d] to-black py-3.5 text-[0.9rem] font-extrabold tracking-wide text-white hover:from-[#3a3a3c] hover:to-[#0a0a0a] disabled:opacity-60"
+                  className="w-full rounded-[10px] bg-gradient-to-b from-[#4B2E83] to-[#392065] py-3.5 text-[0.9rem] font-extrabold tracking-wide text-white hover:from-[#5a3799] hover:to-[#2d1850] disabled:opacity-60"
                 >
                   {submitting ? 'Please wait…' : 'Sign Up'}
                 </button>
               </form>
 
-              <div className="my-5.5 flex items-center gap-3 text-[0.72rem] text-[#6b6f76] before:h-px before:flex-1 before:bg-[#dcdde0] after:h-px after:flex-1 after:bg-[#dcdde0]">
+              <div className="my-5.5 flex items-center gap-3 text-[0.72rem] text-[#6b7280] before:h-px before:flex-1 before:bg-[#dcdde0] after:h-px after:flex-1 after:bg-[#dcdde0]">
                 or continue with
               </div>
 
               <button
                 type="button"
                 onClick={handleGoogleSignUp}
-                className="mb-2.5 flex w-full items-center justify-center gap-2.5 rounded-[10px] border border-[#dcdde0] bg-white py-2.75 text-[0.85rem] font-bold text-[#111113] hover:bg-[#f5f5f6]"
+                className="mb-2.5 flex w-full items-center justify-center gap-2.5 rounded-[10px] border border-[#dcdde0] bg-white py-2.75 text-[0.85rem] font-bold text-[#1d2734] hover:bg-[#f8f9fa]"
               >
                 <Image src="/assets/google.png" alt="" width={18} height={18} className="h-[18px] w-[18px] object-contain" />
                 Continue with Google
@@ -202,9 +202,9 @@ export default function SignupPage() {
             </>
           )}
 
-          <p className="mt-5.5 text-center text-[0.82rem] text-[#6b6f76]">
+          <p className="mt-5.5 text-center text-[0.82rem] text-[#6b7280]">
             Already have an account?{' '}
-            <Link href="/login" className="font-extrabold text-[#0a0a0a]">
+            <Link href="/login" className="font-extrabold text-[#4B2E83]">
               Sign in
             </Link>
           </p>

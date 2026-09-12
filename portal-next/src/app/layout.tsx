@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Strategic X",
-  description: "Strategic X connects local vendors and shoppers, helping local markets grow, sell, and thrive online.",
+  title: "Oshodi Market Online - Vendor Portal",
+  description: "Sell on Oshodi Market Online — manage your shop, products, and orders.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

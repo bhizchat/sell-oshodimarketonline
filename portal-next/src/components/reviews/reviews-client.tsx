@@ -204,7 +204,7 @@ export default function ReviewsClient({
             type="button"
             onClick={() => setTab(value)}
             className={`border-b-2 pb-3 text-[0.84rem] font-bold ${
-              tab === value ? 'border-[#1e8b4a] text-[#1e8b4a]' : 'border-transparent text-[#6b6f76]'
+              tab === value ? 'border-[#1e8b4a] text-[#1e8b4a]' : 'border-transparent text-[#6b7280]'
             }`}
           >
             {label}
@@ -214,32 +214,32 @@ export default function ReviewsClient({
 
       <div className="mb-5 grid grid-cols-3 gap-2.5 sm:gap-4 lg:grid-cols-[1fr_1fr_1fr_1.3fr]">
         <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-4 max-md:p-3">
-          <div className="text-[0.72rem] text-[#6b6f76] max-md:text-[0.62rem]">Overall Rating</div>
+          <div className="text-[0.72rem] text-[#6b7280] max-md:text-[0.62rem]">Overall Rating</div>
           <div className="mt-1.5 text-[1.3rem] font-extrabold max-md:mt-1 max-md:text-[1rem]">
             {avg.toFixed(1)} <span className="ml-1 align-middle text-[0.8rem] text-[#f4b740] max-md:text-[0.68rem]">{starString(avg)}</span>
           </div>
-          <div className="mt-1 text-[0.68rem] text-[#6b6f76] max-md:text-[0.6rem]">
+          <div className="mt-1 text-[0.68rem] text-[#6b7280] max-md:text-[0.6rem]">
             Based on {total} review{total === 1 ? '' : 's'}
           </div>
         </div>
         <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-4 max-md:p-3">
-          <div className="text-[0.72rem] text-[#6b6f76] max-md:text-[0.62rem]">Total Reviews</div>
+          <div className="text-[0.72rem] text-[#6b7280] max-md:text-[0.62rem]">Total Reviews</div>
           <div className="mt-1.5 text-[1.3rem] font-extrabold max-md:mt-1 max-md:text-[1rem]">{total}</div>
-          <div className="mt-1 text-[0.68rem] text-[#6b6f76] max-md:text-[0.6rem]">Across all products</div>
+          <div className="mt-1 text-[0.68rem] text-[#6b7280] max-md:text-[0.6rem]">Across all products</div>
         </div>
         <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-4 max-md:p-3">
-          <div className="text-[0.72rem] text-[#6b6f76] max-md:text-[0.62rem]">5 Star Reviews</div>
+          <div className="text-[0.72rem] text-[#6b7280] max-md:text-[0.62rem]">5 Star Reviews</div>
           <div className="mt-1.5 text-[1.3rem] font-extrabold max-md:mt-1 max-md:text-[1rem]">
-            {fiveStar} {total > 0 && <span className="ml-1.5 text-[0.68rem] font-normal text-[#6b6f76] max-md:text-[0.6rem]">({fiveStarPct}%)</span>}
+            {fiveStar} {total > 0 && <span className="ml-1.5 text-[0.68rem] font-normal text-[#6b7280] max-md:text-[0.6rem]">({fiveStarPct}%)</span>}
           </div>
           <div className="mt-2 h-1.25 overflow-hidden rounded-full bg-[#e5e6e8]">
             <div className="h-full rounded-full bg-[#1e8b4a]" style={{ width: `${fiveStarPct}%` }} />
           </div>
         </div>
         <div className="col-span-3 rounded-[14px] border border-[#e2e3e6] bg-white p-4 lg:col-span-1">
-          <div className="mb-2.5 text-[0.78rem] font-bold text-[#6b6f76]">Rating Breakdown</div>
+          <div className="mb-2.5 text-[0.78rem] font-bold text-[#6b7280]">Rating Breakdown</div>
           {breakdown.map(({ star, count, pct }) => (
-            <div key={star} className="mb-1.5 flex items-center gap-2 text-[0.72rem] text-[#6b6f76]">
+            <div key={star} className="mb-1.5 flex items-center gap-2 text-[0.72rem] text-[#6b7280]">
               <span className="w-8.5 shrink-0">{star} Star</span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#e5e6e8]">
                 <div className="h-full rounded-full bg-[#f4b740]" style={{ width: `${pct}%` }} />
@@ -254,19 +254,19 @@ export default function ReviewsClient({
 
       <div className="mb-4.5 flex flex-wrap items-center gap-3">
         <div className="relative min-w-55 flex-1">
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.82rem] text-[#6b6f76]">🔍</span>
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.82rem] text-[#6b7280]">🔍</span>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search reviews by product or customer..."
-            className="w-full rounded-[10px] border border-[#e2e3e6] bg-white py-2.5 pl-9 pr-3.5 text-[0.82rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+            className="w-full rounded-[10px] border border-[#e2e3e6] bg-white py-2.5 pl-9 pr-3.5 text-[0.82rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
           />
         </div>
         <select
           value={productFilter}
           onChange={(e) => setProductFilter(e.target.value)}
-          className="cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b6f76]"
+          className="cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b7280]"
         >
           <option value="">All Products</option>
           {products.map((p) => (
@@ -278,7 +278,7 @@ export default function ReviewsClient({
         <select
           value={ratingFilter}
           onChange={(e) => setRatingFilter(e.target.value)}
-          className="cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b6f76]"
+          className="cursor-pointer rounded-[10px] border border-[#e2e3e6] bg-white px-3.5 py-2.5 text-[0.8rem] font-semibold text-[#6b7280]"
         >
           <option value="">All Ratings</option>
           {[5, 4, 3, 2, 1].map((n) => (
@@ -297,7 +297,7 @@ export default function ReviewsClient({
               <h3 className="text-[1rem] font-bold">
                 {loadError ? 'Could not load reviews' : total === 0 ? 'No reviews yet' : 'No matching reviews'}
               </h3>
-              <p className="max-w-[320px] text-[0.82rem] text-[#6b6f76]">
+              <p className="max-w-[320px] text-[0.82rem] text-[#6b7280]">
                 {loadError
                   ? `Could not load reviews (${loadError}). If this persists, the "reviews" table may need an additional RLS read policy for signed-in vendors — see sx-reviews-read-policy.sql.`
                   : total === 0
@@ -311,7 +311,7 @@ export default function ReviewsClient({
                 <thead className="max-md:hidden">
                   <tr>
                     {['Review', 'Product', 'Rating', 'Date', 'Actions'].map((h) => (
-                      <th key={h} className="border-b border-[#e2e3e6] px-5 py-3.5 text-left text-[0.7rem] font-bold uppercase tracking-wide text-[#6b6f76]">
+                      <th key={h} className="border-b border-[#e2e3e6] px-5 py-3.5 text-left text-[0.7rem] font-bold uppercase tracking-wide text-[#6b7280]">
                         {h}
                       </th>
                     ))}
@@ -334,10 +334,10 @@ export default function ReviewsClient({
                             </div>
                             <div>
                               <div className="text-[0.82rem] font-bold">{review.reviewerName || 'Anonymous'}</div>
-                              <div className="mt-0.5 text-[0.78rem] text-[#6b6f76]">{review.comment}</div>
+                              <div className="mt-0.5 text-[0.78rem] text-[#6b7280]">{review.comment}</div>
                               {hasReply && (
-                                <div className="mt-2 rounded-lg border border-[#e2e3e6] bg-[#f5f5f6] px-2.5 py-2 text-[0.76rem] text-[#6b6f76]">
-                                  <strong className="text-[0.74rem] text-[#111113]">Your reply:</strong> {review.shopReply}
+                                <div className="mt-2 rounded-lg border border-[#e2e3e6] bg-[#f8f9fa] px-2.5 py-2 text-[0.76rem] text-[#6b7280]">
+                                  <strong className="text-[0.74rem] text-[#1d2734]">Your reply:</strong> {review.shopReply}
                                 </div>
                               )}
                             </div>
@@ -361,7 +361,7 @@ export default function ReviewsClient({
                             {starString(review.rating)} {review.rating}
                           </span>
                         </td>
-                        <td className={`px-5 py-4 align-top text-[0.78rem] whitespace-nowrap text-[#6b6f76] max-md:ml-2.5 max-md:mt-2.5 max-md:inline-block max-md:w-auto max-md:border-b-0 max-md:px-0 max-md:py-0 max-md:align-middle ${isLast ? '' : 'border-b border-[#e2e3e6]'}`}>
+                        <td className={`px-5 py-4 align-top text-[0.78rem] whitespace-nowrap text-[#6b7280] max-md:ml-2.5 max-md:mt-2.5 max-md:inline-block max-md:w-auto max-md:border-b-0 max-md:px-0 max-md:py-0 max-md:align-middle ${isLast ? '' : 'border-b border-[#e2e3e6]'}`}>
                           {formatDate(review.createdAt)}
                         </td>
                         <td className={`px-5 py-4 align-top text-[0.84rem] max-md:mt-3.5 max-md:block max-md:w-full max-md:border-b-0 max-md:px-0 max-md:py-0 ${isLast ? '' : 'border-b border-[#e2e3e6]'}`}>
@@ -369,7 +369,7 @@ export default function ReviewsClient({
                             type="button"
                             onClick={() => openReplyModal(review)}
                             className={`whitespace-nowrap rounded-lg border px-3 py-1.5 text-[0.76rem] font-bold max-md:w-full ${
-                              hasReply ? 'border-[#8a8d91] text-[#111113]' : 'border-[#e2e3e6] text-[#6b6f76] hover:border-[#8a8d91] hover:bg-[#e5e6e8] hover:text-[#111113]'
+                              hasReply ? 'border-[#6c5ce7] text-[#1d2734]' : 'border-[#e2e3e6] text-[#6b7280] hover:border-[#6c5ce7] hover:bg-[#e5e6e8] hover:text-[#1d2734]'
                             }`}
                           >
                             {hasReply ? 'Edit Reply' : 'Reply'}
@@ -389,7 +389,7 @@ export default function ReviewsClient({
                 type="button"
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="rounded-[10px] border border-[#e2e3e6] bg-white px-5 py-2.5 text-[0.82rem] font-extrabold text-[#0a0a0a] hover:bg-[#e5e6e8] disabled:opacity-50"
+                className="rounded-[10px] border border-[#e2e3e6] bg-white px-5 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] hover:bg-[#e5e6e8] disabled:opacity-50"
               >
                 {loadingMore ? 'Loading…' : `Load More (${loadedCount} of ${totalCount})`}
               </button>
@@ -400,7 +400,7 @@ export default function ReviewsClient({
         <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-4.5">
           <div className="mb-3.5 text-[0.86rem] font-bold">Top Rated Products</div>
           {topRated.length === 0 ? (
-            <p className="text-[0.78rem] text-[#6b6f76]">No rated products yet.</p>
+            <p className="text-[0.78rem] text-[#6b7280]">No rated products yet.</p>
           ) : (
             topRated.map((entry) => (
               <div key={entry.productId} className="mb-3.5 flex items-center gap-2.5 last:mb-0">
@@ -414,7 +414,7 @@ export default function ReviewsClient({
                 </div>
                 <div>
                   <div className="text-[0.8rem] font-bold">{entry.product?.productName}</div>
-                  <div className="mt-0.5 text-[0.72rem] text-[#6b6f76]">
+                  <div className="mt-0.5 text-[0.72rem] text-[#6b7280]">
                     {entry.avg.toFixed(1)} ★ ({entry.count} review{entry.count === 1 ? '' : 's'})
                   </div>
                 </div>
@@ -433,25 +433,25 @@ export default function ReviewsClient({
         >
           <div className="max-h-[88vh] w-full max-w-[480px] overflow-y-auto rounded-2xl border border-[#e2e3e6] bg-white p-6">
             <div className="mb-1.5 text-[1rem] font-bold">Reply to Review</div>
-            <div className="mb-4 border-b border-[#e2e3e6] pb-3.5 text-[0.8rem] text-[#6b6f76]">
-              <strong className="text-[#111113]">{replyingReview.reviewerName || 'Anonymous'}:</strong> {replyingReview.comment}
+            <div className="mb-4 border-b border-[#e2e3e6] pb-3.5 text-[0.8rem] text-[#6b7280]">
+              <strong className="text-[#1d2734]">{replyingReview.reviewerName || 'Anonymous'}:</strong> {replyingReview.comment}
             </div>
             {replyError && <div className="mb-3 text-[0.78rem] text-[#e08a8a]">{replyError}</div>}
             <div className="mb-3.5">
-              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b6f76]">Your Reply</label>
+              <label className="mb-1.5 block text-[0.78rem] font-semibold text-[#6b7280]">Your Reply</label>
               <textarea
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 maxLength={1000}
                 placeholder="Thank you for your feedback..."
-                className="min-h-25 w-full resize-y rounded-lg border border-[#e2e3e6] bg-[#f5f5f6] px-3 py-2.25 text-[0.86rem] text-[#111113] outline-none focus:border-[#8a8d91]"
+                className="min-h-25 w-full resize-y rounded-lg border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.25 text-[0.86rem] text-[#1d2734] outline-none focus:border-[#6c5ce7]"
               />
             </div>
             <div className="mt-1.5 flex justify-end gap-2.5">
               <button
                 type="button"
                 onClick={closeReplyModal}
-                className="rounded-[10px] border border-[#e2e3e6] bg-transparent px-4 py-2.5 text-[0.82rem] font-bold text-[#6b6f76] hover:bg-[#e5e6e8] hover:text-[#111113]"
+                className="rounded-[10px] border border-[#e2e3e6] bg-transparent px-4 py-2.5 text-[0.82rem] font-bold text-[#6b7280] hover:bg-[#e5e6e8] hover:text-[#1d2734]"
               >
                 Cancel
               </button>
@@ -459,7 +459,7 @@ export default function ReviewsClient({
                 type="button"
                 onClick={saveReply}
                 disabled={saving}
-                className="rounded-[10px] border-none bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#0a0a0a] shadow-[0_0_0_1px_#e2e3e6] hover:bg-[#e5e6e8] disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-[10px] border-none bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] shadow-[0_0_0_1px_#e2e3e6] hover:bg-[#e5e6e8] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? 'Posting...' : 'Post Reply'}
               </button>

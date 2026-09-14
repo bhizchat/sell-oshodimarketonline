@@ -4,11 +4,22 @@ import type { NextConfig } from "next";
 // client-side JS can read, because the Supabase browser SDK needs that
 // access to attach the token to its own requests. That means the real
 // protection against session theft via XSS is stopping injected/foreign
-// scripts from running in the first place — this policy only allows
+// SCRIPT FILES from loading in the first place — this policy only allows
 // scripts from our own origin and Paystack's checkout script.
+//
+// 'unsafe-inline' is required for script-src because Next.js injects its
+// own inline bootstrap/hydration scripts on every page; without it the
+// app fails to hydrate at all (no click handlers ever attach). The
+// alternative is a per-request nonce (see Next.js's CSP guide), but that
+// forces every page in the app into fully dynamic rendering (no static
+// generation/ISR/CDN caching anywhere), which is a bigger tradeoff than
+// this app needs. The app never renders raw/attacker-controlled HTML
+// (no dangerouslySetInnerHTML), so the realistic inline-injection surface
+// this gives up is small, and connect-src still limits any injected
+// script to talking only to our own origin, Supabase, and Paystack.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' https://js.paystack.co",
+  "script-src 'self' 'unsafe-inline' https://js.paystack.co",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
@@ -19,6 +30,7 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   "frame-ancestors 'none'",
 ].join('; ');
+
 
 const nextConfig: NextConfig = {
   async headers() {

@@ -63,6 +63,7 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
   }, []);
 
   async function handlePay() {
+    if (!scriptReady || !window.PaystackPop) return;
     setError('');
     setStatus('starting');
 
@@ -72,9 +73,6 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
 
       if (!initRes.ok) {
         throw new Error(initJson.error || 'Could not start checkout.');
-      }
-      if (!scriptReady || !window.PaystackPop) {
-        throw new Error('Payment library is still loading. Please try again in a moment.');
       }
 
       setStatus('awaiting-checkout');
@@ -112,7 +110,12 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
 
   return (
     <>
-      <Script src="https://js.paystack.co/v2/inline.js" strategy="afterInteractive" onLoad={() => setScriptReady(true)} />
+      <Script
+        src="https://js.paystack.co/v2/inline.js"
+        strategy="afterInteractive"
+        onLoad={() => setScriptReady(true)}
+        onError={() => setError('Could not load the payment form. Please check your connection and refresh the page.')}
+      />
 
       <div className="mb-6 flex items-center gap-2.5">
         <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
@@ -223,10 +226,11 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
                 <button
                   type="button"
                   onClick={handlePay}
-                  disabled={status !== 'idle'}
+                  disabled={status !== 'idle' || !scriptReady}
                   className="inline-flex items-center gap-1.5 rounded-[9px] bg-[#1e8b4a] px-5 py-2.5 text-[0.82rem] font-bold text-white hover:bg-[#197a40] disabled:cursor-not-allowed disabled:opacity-90"
                 >
-                  {status === 'idle' && (
+                  {status === 'idle' && !scriptReady && 'Loading payment form...'}
+                  {status === 'idle' && scriptReady && (
                     <>
                       <Image src="/assets/lock.png" alt="" width={14} height={14} className="object-contain invert" />
                       Pay with Paystack

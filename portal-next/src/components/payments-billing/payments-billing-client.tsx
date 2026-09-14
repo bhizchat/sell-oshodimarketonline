@@ -132,7 +132,7 @@ export default function PaymentsBillingClient() {
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
               <span className="text-[#6b7280]">Amount</span>
-              <span className="font-bold">₦4,000 / month</span>
+              <span className="font-bold">₦10,000 / month</span>
             </div>
           </div>
 
@@ -244,7 +244,7 @@ export default function PaymentsBillingClient() {
               <div>
                 <div className="text-[0.84rem] font-bold">No Charge Due Now</div>
                 <div className="mt-0.75 text-[0.78rem] text-[#6b7280]">
-                  After your free trial ends, you&apos;ll be automatically charged ₦4,000 every month.
+                  After your free trial ends, you&apos;ll be automatically charged ₦10,000 every month.
                 </div>
               </div>
             </div>

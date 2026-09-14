@@ -68,11 +68,8 @@ export default async function DashboardPage() {
           <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b7280]">Here&apos;s what&apos;s happening with your shop today.</p>
 
           <div className="relative mb-5 rounded-[14px] border border-[#e2e3e6] bg-white p-4.5 px-5.5">
-            <div className="text-[0.74rem] text-[#6b7280]">You are selling on</div>
-            <div className="mt-0.5 text-[1.05rem] font-bold">{shop.marketPlatform}</div>
-            <a href="/onboarding-step2" className="mt-2.5 inline-block border-b border-[#6c5ce7] text-[0.78rem] font-bold text-[#6c5ce7]">
-              Change Platform
-            </a>
+            <div className="text-[0.74rem] text-[#6b7280]">Shop ID</div>
+            <div className="mt-0.5 text-[1.05rem] font-bold tracking-wide">{shop.shopCode || 'Not assigned yet'}</div>
             {viewShopUrl && (
               <a
                 href={viewShopUrl}

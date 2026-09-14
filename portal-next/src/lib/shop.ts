@@ -4,6 +4,7 @@ export type ShopContext = {
   isStaff: boolean;
   role: string | null;
   shopId: string | null;
+  shopCode: string | null;
   shopName: string;
   category: string;
   marketPlatform: string;
@@ -24,7 +25,7 @@ export async function resolveShopContext(
   if (isStaff) {
     const { data: membership } = await supabase
       .from('sx_shop_members')
-      .select('role, sx_shops(id, shop_name, category, market_platform, logo_url)')
+      .select('role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url)')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -35,6 +36,7 @@ export async function resolveShopContext(
       isStaff: true,
       role: (membership.role as string) || null,
       shopId: (joinedShop.id as string) || null,
+      shopCode: (joinedShop.shop_code as string) || null,
       shopName: (joinedShop.shop_name as string) || (meta.sx_shop_name as string) || 'Shop',
       category: (joinedShop.category as string) || '',
       marketPlatform: (joinedShop.market_platform as string) || 'Not set yet',
@@ -44,7 +46,7 @@ export async function resolveShopContext(
 
   const { data: ownedShop } = await supabase
     .from('sx_shops')
-    .select('id, shop_name, category, market_platform, logo_url')
+    .select('id, shop_code, shop_name, category, market_platform, logo_url')
     .eq('owner_id', user.id)
     .maybeSingle();
 
@@ -52,6 +54,7 @@ export async function resolveShopContext(
     isStaff: false,
     role: 'owner',
     shopId: ownedShop?.id || null,
+    shopCode: ownedShop?.shop_code || null,
     shopName: ownedShop?.shop_name || (meta.sx_shop_name as string) || 'Your Shop',
     category: ownedShop?.category || (meta.sx_category as string) || '',
     marketPlatform: ownedShop?.market_platform || (meta.sx_market_platform as string) || 'Not set yet',
@@ -162,6 +165,7 @@ export type ShopDetails = {
   id: string | null;
   isStaff: boolean;
   role: string | null;
+  shopCode: string | null;
   shopName: string;
   category: string;
   marketPlatform: string;
@@ -194,7 +198,7 @@ export async function loadShopDetails(
     const { data: membership } = await supabase
       .from('sx_shop_members')
       .select(
-        'role, sx_shops(id, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at)'
+        'role, sx_shops(id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at)'
       )
       .eq('user_id', user.id)
       .maybeSingle();
@@ -206,7 +210,7 @@ export async function loadShopDetails(
   } else {
     const { data } = await supabase
       .from('sx_shops')
-      .select('id, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at')
+      .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at')
       .eq('owner_id', user.id)
       .maybeSingle();
     shopRow = data || {};
@@ -217,6 +221,7 @@ export async function loadShopDetails(
     id: (shopRow.id as string) || null,
     isStaff,
     role,
+    shopCode: (shopRow.shop_code as string) || null,
     shopName: (shopRow.shop_name as string) || (meta.sx_shop_name as string) || 'Your Shop',
     category: (shopRow.category as string) || (meta.sx_category as string) || '',
     marketPlatform: (shopRow.market_platform as string) || (meta.sx_market_platform as string) || 'Not set yet',

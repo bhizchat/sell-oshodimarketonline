@@ -27,8 +27,7 @@ export default async function AddProductPage() {
   }
 
   const ctx = await resolveShopContext(supabase, user);
-  const isStaff = meta.sx_shop_role === 'staff';
-  if (isStaff && !ctx) {
+  if (!ctx) {
     redirect('/staff-join');
   }
 

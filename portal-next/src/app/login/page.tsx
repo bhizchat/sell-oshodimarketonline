@@ -22,11 +22,15 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const result = await response.json();
     setSubmitting(false);
-    if (error) {
-      setError(error.message || 'Unable to sign in. Please check your details.');
+    if (!response.ok) {
+      setError(result.error || 'Unable to sign in. Please check your details.');
       return;
     }
     window.location.href = '/dashboard';
@@ -112,9 +116,9 @@ export default function LoginPage() {
                 />
                 Remember me
               </label>
-              <a href="#" className="font-bold text-[#4B2E83]">
+              <Link href="/forgot-password" className="font-bold text-[#4B2E83]">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button

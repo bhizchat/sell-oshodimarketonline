@@ -1,6 +1,13 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+// Kept in sync with client.ts/server.ts — forces `secure` so the session
+// cookie is never sent over a plain HTTP connection.
+const cookieOptions = {
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+};
+
 // Refreshes the Supabase auth session cookie on every request so it
 // never silently expires mid-visit, and keeps server + browser clients
 // in sync. Runs before every page/route matched below (see config.matcher
@@ -24,6 +31,7 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+      cookieOptions,
     }
   );
 

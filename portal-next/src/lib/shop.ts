@@ -25,22 +25,48 @@ export type ShopContext = {
 // Server-side port of sx-auth.js's resolveShopContext(). Owners and staff
 // share the exact same dashboard; this just resolves whose shop's data to
 // load: owners by sx_shops.owner_id, staff by their sx_shop_members row.
-// Returns null if a staff account hasn't joined a shop yet.
+// Returns null if neither relationship exists yet (e.g. a staff account
+// that hasn't joined a shop).
+//
+// SECURITY: role is derived from real ownership/membership rows, NEVER
+// from user_metadata.sx_shop_role — that field is client-writable via
+// supabase.auth.updateUser() (any signed-in user can rewrite their own
+// metadata from the browser console), so it must never be trusted for an
+// access-control decision. It's only used elsewhere for cosmetic/UX
+// routing (e.g. which onboarding step to resume).
 export async function resolveShopContext(
   supabase: SupabaseClient,
   user: { id: string; user_metadata?: Record<string, unknown> }
 ): Promise<ShopContext | null> {
   const meta = user.user_metadata || {};
-  const isStaff = meta.sx_shop_role === 'staff';
 
-  if (isStaff) {
-    const { data: membership } = await supabase
-      .from('sx_shop_members')
-      .select('role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status)')
-      .eq('user_id', user.id)
-      .maybeSingle();
+  const { data: ownedShop } = await supabase
+    .from('sx_shops')
+    .select('id, shop_code, shop_name, category, market_platform, logo_url, subscription_status')
+    .eq('owner_id', user.id)
+    .maybeSingle();
 
-    if (!membership) return null;
+  if (ownedShop) {
+    return {
+      isStaff: false,
+      role: 'owner',
+      shopId: ownedShop.id || null,
+      shopCode: ownedShop.shop_code || null,
+      shopName: ownedShop.shop_name || (meta.sx_shop_name as string) || 'Your Shop',
+      category: ownedShop.category || (meta.sx_category as string) || '',
+      marketPlatform: ownedShop.market_platform || (meta.sx_market_platform as string) || 'Not set yet',
+      logoUrl: ownedShop.logo_url || (meta.sx_shop_logo_url as string) || '',
+      subscriptionStatus: (ownedShop.subscription_status as SubscriptionStatus) || 'none',
+    };
+  }
+
+  const { data: membership } = await supabase
+    .from('sx_shop_members')
+    .select('role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status)')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (membership) {
     const shopRelation = membership.sx_shops as unknown;
     const joinedShop = ((Array.isArray(shopRelation) ? shopRelation[0] : shopRelation) as Record<string, unknown>) || {};
     return {
@@ -56,23 +82,7 @@ export async function resolveShopContext(
     };
   }
 
-  const { data: ownedShop } = await supabase
-    .from('sx_shops')
-    .select('id, shop_code, shop_name, category, market_platform, logo_url, subscription_status')
-    .eq('owner_id', user.id)
-    .maybeSingle();
-
-  return {
-    isStaff: false,
-    role: 'owner',
-    shopId: ownedShop?.id || null,
-    shopCode: ownedShop?.shop_code || null,
-    shopName: ownedShop?.shop_name || (meta.sx_shop_name as string) || 'Your Shop',
-    category: ownedShop?.category || (meta.sx_category as string) || '',
-    marketPlatform: ownedShop?.market_platform || (meta.sx_market_platform as string) || 'Not set yet',
-    logoUrl: ownedShop?.logo_url || (meta.sx_shop_logo_url as string) || '',
-    subscriptionStatus: ((ownedShop?.subscription_status as SubscriptionStatus) || 'none'),
-  };
+  return null;
 }
 
 export type ShopStats = {
@@ -198,17 +208,29 @@ export type ShopDetails = {
 // user_metadata for anything missing, same as the static page. Owners load
 // by sx_shops.owner_id; staff/managers load the shop they've joined via
 // sx_shop_members.
+//
+// SECURITY: role is derived from real ownership/membership rows, NEVER
+// from user_metadata.sx_shop_role — see resolveShopContext() above for why.
 export async function loadShopDetails(
   supabase: SupabaseClient,
   user: { id: string; created_at?: string; user_metadata?: Record<string, unknown> }
 ): Promise<ShopDetails | null> {
   const meta = user.user_metadata || {};
-  const isStaff = meta.sx_shop_role === 'staff';
 
-  let shopRow: Record<string, unknown> = {};
+  let shopRow: Record<string, unknown> | null = null;
   let role: string | null = null;
+  let isStaff = false;
 
-  if (isStaff) {
+  const { data: ownedShop } = await supabase
+    .from('sx_shops')
+    .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status')
+    .eq('owner_id', user.id)
+    .maybeSingle();
+
+  if (ownedShop) {
+    shopRow = ownedShop;
+    role = 'owner';
+  } else {
     const { data: membership } = await supabase
       .from('sx_shop_members')
       .select(
@@ -221,14 +243,7 @@ export async function loadShopDetails(
     const shopRelation = membership.sx_shops as unknown;
     shopRow = ((Array.isArray(shopRelation) ? shopRelation[0] : shopRelation) as Record<string, unknown>) || {};
     role = (membership.role as string) || null;
-  } else {
-    const { data } = await supabase
-      .from('sx_shops')
-      .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status')
-      .eq('owner_id', user.id)
-      .maybeSingle();
-    shopRow = data || {};
-    role = 'owner';
+    isStaff = true;
   }
 
   return {

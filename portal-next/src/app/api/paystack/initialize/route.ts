@@ -18,15 +18,12 @@ export async function POST() {
     return NextResponse.json({ error: 'Not authenticated.' }, { status: 401 });
   }
 
-  const meta = (user.user_metadata as Record<string, unknown>) || {};
-  const isStaff = meta.sx_shop_role === 'staff';
-  if (isStaff) {
-    return NextResponse.json({ error: 'Only the shop owner can manage billing.' }, { status: 403 });
-  }
-
   const shop = await resolveShopContext(supabase, user);
   if (!shop || !shop.shopId) {
     return NextResponse.json({ error: 'Shop not found.' }, { status: 404 });
+  }
+  if (shop.isStaff) {
+    return NextResponse.json({ error: 'Only the shop owner can manage billing.' }, { status: 403 });
   }
 
   const email = user.email;

@@ -27,9 +27,8 @@ export default async function DashboardPage() {
     redirect('/onboarding');
   }
 
-  const isStaff = meta.sx_shop_role === 'staff';
   const ctx = await resolveShopContext(supabase, user);
-  if (isStaff && !ctx) {
+  if (!ctx) {
     redirect('/staff-join');
   }
 
@@ -59,7 +58,7 @@ export default async function DashboardPage() {
         shopMeta={shopMeta}
         shopInitial={shop.shopName.charAt(0).toUpperCase() || 'S'}
         logoUrl={shop.logoUrl}
-        isStaff={isStaff}
+        isStaff={shop.isStaff}
         role={shop.role}
         reviewsCount={stats?.reviewCount ?? 0}
       />

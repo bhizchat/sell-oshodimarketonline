@@ -1,6 +1,13 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+// Kept in sync with client.ts — forces `secure` so the session cookie is
+// never sent over a plain HTTP connection.
+const cookieOptions = {
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+};
+
 // Server-side Supabase client, used inside Server Components / Route
 // Handlers / Server Actions. Reads the auth session from cookies (set by
 // middleware.ts) so pages can fetch shop/product/review data on the
@@ -29,6 +36,7 @@ export async function createClient() {
           }
         },
       },
+      cookieOptions,
     }
   );
 }

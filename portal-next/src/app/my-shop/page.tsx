@@ -44,8 +44,7 @@ export default async function MyShopPage({ searchParams }: { searchParams: Promi
   }
 
   const shop = await loadShopDetails(supabase, user);
-  const isStaff = meta.sx_shop_role === 'staff';
-  if (isStaff && !shop) {
+  if (!shop) {
     redirect('/staff-join');
   }
 

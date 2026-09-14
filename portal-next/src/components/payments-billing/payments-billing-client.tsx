@@ -233,7 +233,7 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
                   {status === 'idle' && scriptReady && (
                     <>
                       <Image src="/assets/lock.png" alt="" width={14} height={14} className="object-contain invert" />
-                      Pay with Paystack
+                      Pay with Card
                     </>
                   )}
                   {status === 'starting' && 'Starting checkout...'}

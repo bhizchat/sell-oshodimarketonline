@@ -52,7 +52,11 @@ end $$;
 
 -- Expose shop_code through the public-safe view too (it's not sensitive —
 -- it's meant to be shown/shared, unlike the internal uuid).
-create or replace view public.sx_shops_public as
+-- CREATE OR REPLACE VIEW can't reorder/insert columns among existing
+-- ones (only append at the end), and shop_code needs to sit right after
+-- id, so drop and recreate instead of replacing in place.
+drop view if exists public.sx_shops_public;
+create view public.sx_shops_public as
 select
   id,
   shop_code,

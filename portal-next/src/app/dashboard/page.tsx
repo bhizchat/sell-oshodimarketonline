@@ -67,15 +67,17 @@ export default async function DashboardPage() {
           <h1 className="text-[1.5rem] font-extrabold">Welcome back, {firstName}! 👋</h1>
           <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b7280]">Here&apos;s what&apos;s happening with your shop today.</p>
 
-          <div className="relative mb-5 rounded-[14px] border border-[#e2e3e6] bg-white p-4.5 px-5.5">
-            <div className="text-[0.74rem] text-[#6b7280]">Shop ID</div>
-            <div className="mt-0.5 text-[1.05rem] font-bold tracking-wide">{shop.shopCode || 'Not assigned yet'}</div>
+          <div className="mb-5 flex items-center justify-between rounded-[14px] border border-[#e2e3e6] bg-white p-4.5 px-5.5">
+            <div>
+              <div className="text-[0.74rem] text-[#6b7280]">Shop ID</div>
+              <div className="mt-0.5 text-[1.05rem] font-bold tracking-wide">{shop.shopCode || 'Not assigned yet'}</div>
+            </div>
             {viewShopUrl && (
               <a
                 href={viewShopUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="float-right rounded-lg border border-white/[0.08] bg-[#f4b740] px-4 py-2 text-[#1d2734]"
+                className="rounded-lg border border-white/[0.08] bg-[#f4b740] px-4 py-2 text-[#1d2734]"
               >
                 View Shop
               </a>

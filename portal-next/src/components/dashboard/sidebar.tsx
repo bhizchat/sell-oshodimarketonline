@@ -123,7 +123,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                     isActive ? 'bg-[#392065] text-white' : 'text-[#4B2E83] hover:bg-white/60 hover:text-[#392065]'
                   }`}
                 >
-                  <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-gradient-to-br from-[#e5e6e8] to-[#c7c9cc]">
+                  <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-white">
                     <Image src={item.icon} alt="" width={15} height={15} className="h-[15px] w-[15px] object-contain" />
                   </span>
                   <span className="flex-1">{item.label}</span>
@@ -149,7 +149,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
               onClick={() => setSupportOpen((v) => !v)}
               className="flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-left text-[0.82rem] font-semibold text-[#4B2E83] hover:bg-white/60 hover:text-[#392065]"
             >
-              <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-gradient-to-br from-[#e5e6e8] to-[#c7c9cc]">
+              <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-white">
                 <Image src="/assets/question.png" alt="" width={15} height={15} className="h-[15px] w-[15px] object-contain" />
               </span>
               <span className="flex-1">Support &amp; Help</span>

@@ -51,11 +51,15 @@ export default function SignupPage() {
   }
 
   async function handleGoogleSignUp() {
+    setError(null);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
+    if (oauthError) {
+      setError(oauthError.message || 'Unable to continue with Google. Please try again.');
+    }
   }
 
   return (

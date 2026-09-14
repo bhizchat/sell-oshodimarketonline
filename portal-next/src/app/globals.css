@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* iOS Safari auto-zooms the page when a focused input's font-size is below
+   16px, and often fails to zoom back out after the field is blurred. Force
+   a 16px minimum on all form controls on small screens to prevent it,
+   without changing the visual size on larger viewports where this isn't an
+   issue. */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+

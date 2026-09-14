@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { resolveShopContext } from '@/lib/shop';
 import { initializeTransaction, CARD_VERIFICATION_AMOUNT_KOBO } from '@/lib/paystack';
 
@@ -45,7 +46,7 @@ export async function POST() {
       callbackUrl: `${siteUrl}/payments-billing`,
     });
 
-    const { error: insertError } = await supabase.from('sx_payments').insert({
+    const { error: insertError } = await createAdminClient().from('sx_payments').insert({
       shop_id: shop.shopId,
       shop_code: shop.shopCode,
       user_id: user.id,

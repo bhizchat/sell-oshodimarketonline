@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyTransaction, refundTransaction, createSubscription } from '@/lib/paystack';
 
 const TRIAL_DAYS = 30;
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createClient();
+  const admin = createAdminClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -45,11 +47,11 @@ export async function GET(request: NextRequest) {
     const tx = result.data;
 
     if (tx.status !== 'success') {
-      await supabase.from('sx_payments').update({ status: 'failed' }).eq('id', payment.id);
+      await admin.from('sx_payments').update({ status: 'failed' }).eq('id', payment.id);
       return NextResponse.json({ status: 'failed' }, { status: 200 });
     }
 
-    await supabase
+    await admin
       .from('sx_payments')
       .update({
         status: 'success',
@@ -76,7 +78,7 @@ export async function GET(request: NextRequest) {
       // customer. Trial dates are still recorded below.
     }
 
-    await supabase
+    await admin
       .from('sx_shops')
       .update({
         subscription_status: 'trialing',
@@ -93,7 +95,7 @@ export async function GET(request: NextRequest) {
     // already has full access via the trial.
     try {
       await refundTransaction(tx.id);
-      await supabase.from('sx_payments').update({ status: 'refunded' }).eq('id', payment.id);
+      await admin.from('sx_payments').update({ status: 'refunded' }).eq('id', payment.id);
     } catch {
       // Refund can be retried manually from the Paystack dashboard.
     }

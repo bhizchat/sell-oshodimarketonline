@@ -23,8 +23,14 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://*.paystack.co",
-  "frame-src https://*.paystack.co",
+  // Paystack's script/API live on the .co domain, but the actual checkout
+  // popup it opens (card entry form) is served from checkout.paystack.com
+  // — a different TLD, not covered by *.paystack.co. Both connect-src and
+  // frame-src need the .com domain too, or the popup iframe gets silently
+  // blocked by the browser ("This content is blocked" with no console
+  // context beyond the CSP violation).
+  "connect-src 'self' https://*.supabase.co https://*.paystack.co https://*.paystack.com",
+  "frame-src https://*.paystack.co https://*.paystack.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

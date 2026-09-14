@@ -38,9 +38,17 @@ export async function POST(request: Request) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).origin;
   const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/reset-password`,
   });
+
+  if (error) {
+    // Never leak this to the client (would reveal account existence /
+    // internals) — but DO log it server-side so delivery failures (SMTP
+    // misconfiguration, Supabase's built-in mailer rate limit, etc.) are
+    // visible in Vercel function logs instead of silently vanishing.
+    console.error('[forgot-password] resetPasswordForEmail failed:', error.message);
+  }
 
   return NextResponse.json({ ok: true, message: genericMessage });
 }

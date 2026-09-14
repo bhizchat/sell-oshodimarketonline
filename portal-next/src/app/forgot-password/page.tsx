@@ -19,18 +19,23 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    const response = await fetch('/api/auth/forgot-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-    const result = await response.json();
-    setSubmitting(false);
-    if (!response.ok) {
-      setError(result.error || 'Something went wrong. Please try again.');
-      return;
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result.error || 'Something went wrong. Please try again.');
+        return;
+      }
+      setSent(true);
+    } catch {
+      setError('Could not reach the server. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
-    setSent(true);
   }
 
   return (
@@ -80,8 +85,14 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full rounded-[10px] bg-linear-to-b from-[#4B2E83] to-[#392065] py-3.5 text-[0.9rem] font-extrabold tracking-wide text-white hover:from-[#5a3799] hover:to-[#2d1850] disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-[10px] bg-linear-to-b from-[#4B2E83] to-[#392065] py-3.5 text-[0.9rem] font-extrabold tracking-wide text-white hover:from-[#5a3799] hover:to-[#2d1850] disabled:opacity-60"
               >
+                {submitting && (
+                  <span
+                    aria-hidden="true"
+                    className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                  />
+                )}
                 {submitting ? 'Sending…' : 'Send reset link'}
               </button>
             </form>

@@ -1,5 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+export type SubscriptionStatus = 'none' | 'trialing' | 'active' | 'past_due' | 'canceled';
+
+// A shop can access the dashboard/products/reviews/etc once its card has
+// been verified and a trial or active subscription is underway. 'none'
+// (never started checkout), 'past_due' (a recurring charge failed) and
+// 'canceled' all route back to /payments-billing.
+export function hasActiveAccess(status: SubscriptionStatus | null): boolean {
+  return status === 'trialing' || status === 'active';
+}
+
 export type ShopContext = {
   isStaff: boolean;
   role: string | null;
@@ -9,6 +19,7 @@ export type ShopContext = {
   category: string;
   marketPlatform: string;
   logoUrl: string;
+  subscriptionStatus: SubscriptionStatus;
 };
 
 // Server-side port of sx-auth.js's resolveShopContext(). Owners and staff
@@ -25,7 +36,7 @@ export async function resolveShopContext(
   if (isStaff) {
     const { data: membership } = await supabase
       .from('sx_shop_members')
-      .select('role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url)')
+      .select('role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status)')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -41,12 +52,13 @@ export async function resolveShopContext(
       category: (joinedShop.category as string) || '',
       marketPlatform: (joinedShop.market_platform as string) || 'Not set yet',
       logoUrl: (joinedShop.logo_url as string) || '',
+      subscriptionStatus: ((joinedShop.subscription_status as SubscriptionStatus) || 'none'),
     };
   }
 
   const { data: ownedShop } = await supabase
     .from('sx_shops')
-    .select('id, shop_code, shop_name, category, market_platform, logo_url')
+    .select('id, shop_code, shop_name, category, market_platform, logo_url, subscription_status')
     .eq('owner_id', user.id)
     .maybeSingle();
 
@@ -59,6 +71,7 @@ export async function resolveShopContext(
     category: ownedShop?.category || (meta.sx_category as string) || '',
     marketPlatform: ownedShop?.market_platform || (meta.sx_market_platform as string) || 'Not set yet',
     logoUrl: ownedShop?.logo_url || (meta.sx_shop_logo_url as string) || '',
+    subscriptionStatus: ((ownedShop?.subscription_status as SubscriptionStatus) || 'none'),
   };
 }
 
@@ -177,6 +190,7 @@ export type ShopDetails = {
   bannerUrl: string;
   inviteCode: string | null;
   memberSince: string | null;
+  subscriptionStatus: SubscriptionStatus;
 };
 
 // Server-side port of my-shop.html's guardMyShop() shop-loading section:
@@ -198,7 +212,7 @@ export async function loadShopDetails(
     const { data: membership } = await supabase
       .from('sx_shop_members')
       .select(
-        'role, sx_shops(id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at)'
+        'role, sx_shops(id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status)'
       )
       .eq('user_id', user.id)
       .maybeSingle();
@@ -210,7 +224,7 @@ export async function loadShopDetails(
   } else {
     const { data } = await supabase
       .from('sx_shops')
-      .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at')
+      .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status')
       .eq('owner_id', user.id)
       .maybeSingle();
     shopRow = data || {};
@@ -233,6 +247,7 @@ export async function loadShopDetails(
     bannerUrl: (shopRow.banner_url as string) || (meta.sx_shop_banner_url as string) || '',
     inviteCode: (shopRow.invite_code as string) || null,
     memberSince: (shopRow.created_at as string) || user.created_at || null,
+    subscriptionStatus: ((shopRow.subscription_status as SubscriptionStatus) || 'none'),
   };
 }
 

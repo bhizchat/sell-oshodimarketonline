@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { resolveShopContext, loadProducts, loadProductStockStats, PRODUCTS_PAGE_SIZE } from '@/lib/shop';
+import { resolveShopContext, loadProducts, loadProductStockStats, PRODUCTS_PAGE_SIZE, hasActiveAccess } from '@/lib/shop';
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import ProductsClient from '@/components/products/products-client';
@@ -33,6 +33,9 @@ export default async function ProductsPage() {
   }
 
   const shop = ctx!;
+  if (!hasActiveAccess(shop.subscriptionStatus)) {
+    redirect('/payments-billing');
+  }
   const [productsPage, stockStats] = shop.shopId
     ? await Promise.all([loadProducts(supabase, shop.shopId), loadProductStockStats(supabase, shop.shopId)])
     : [{ products: [], totalCount: 0 }, { total: 0, inStock: 0, lowStock: 0, outOfStock: 0 }];

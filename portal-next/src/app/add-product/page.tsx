@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { resolveShopContext } from '@/lib/shop';
+import { resolveShopContext, hasActiveAccess } from '@/lib/shop';
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import AddProductClient from '@/components/add-product/add-product-client';
@@ -33,6 +33,9 @@ export default async function AddProductPage() {
   }
 
   const shop = ctx!;
+  if (!hasActiveAccess(shop.subscriptionStatus)) {
+    redirect('/payments-billing');
+  }
   const shopMeta = shop.category
     ? shop.category + (shop.marketPlatform !== 'Not set yet' ? ' · ' + shop.marketPlatform : '')
     : shop.marketPlatform;

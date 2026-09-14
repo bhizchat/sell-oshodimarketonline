@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { resolveShopContext, loadShopStats, loadViewShopUrl } from '@/lib/shop';
+import { resolveShopContext, loadShopStats, loadViewShopUrl, hasActiveAccess } from '@/lib/shop';
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import { StatCard } from '@/components/dashboard/stat-card';
@@ -33,10 +33,14 @@ export default async function DashboardPage() {
     redirect('/staff-join');
   }
 
+  const shop = ctx!;
+  if (!hasActiveAccess(shop.subscriptionStatus)) {
+    redirect('/payments-billing');
+  }
+
   const fullName = ((meta.sx_full_name as string) || '').trim();
   const firstName = fullName ? fullName.split(' ')[0] : 'there';
 
-  const shop = ctx!;
   // loadShopStats and loadViewShopUrl don't depend on each other, so run
   // them in parallel rather than one after another.
   const [stats, viewShopUrl] = await Promise.all([

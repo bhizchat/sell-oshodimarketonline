@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { resolveShopContext } from '@/lib/shop';
+import { resolveShopContext, hasActiveAccess } from '@/lib/shop';
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import PaymentsBillingClient from '@/components/payments-billing/payments-billing-client';
@@ -35,6 +35,9 @@ export default async function PaymentsBillingPage() {
   }
 
   const shop = ctx!;
+  if (hasActiveAccess(shop.subscriptionStatus)) {
+    redirect('/dashboard');
+  }
   const shopMeta = shop.category
     ? shop.category + (shop.marketPlatform !== 'Not set yet' ? ' · ' + shop.marketPlatform : '')
     : shop.marketPlatform;
@@ -70,7 +73,7 @@ export default async function PaymentsBillingPage() {
             Get full access to all features for 1 month. Cancel anytime before your trial ends and you won&apos;t be charged.
           </p>
 
-          <PaymentsBillingClient />
+          <PaymentsBillingClient isStaff={shop.isStaff} />
         </div>
 
         <div className="flex items-center justify-between border-t border-[#e2e3e6] px-8 py-4.5 text-[0.74rem] text-[#6b7280] max-md:mb-16 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-4.5">

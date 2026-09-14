@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { resolveShopContext, loadShopReviews, loadShopReviewStats, REVIEWS_PAGE_SIZE } from '@/lib/shop';
+import { resolveShopContext, loadShopReviews, loadShopReviewStats, REVIEWS_PAGE_SIZE, hasActiveAccess } from '@/lib/shop';
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import ReviewsClient from '@/components/reviews/reviews-client';
@@ -34,6 +34,9 @@ export default async function ReviewsPage() {
   }
 
   const shop = ctx!;
+  if (!hasActiveAccess(shop.subscriptionStatus)) {
+    redirect('/payments-billing');
+  }
   const [reviewsData, statsEntries] = shop.shopId
     ? await Promise.all([loadShopReviews(supabase, shop.shopId), loadShopReviewStats(supabase, shop.shopId)])
     : [{ products: [], reviews: [], totalCount: 0, loadError: null }, []];

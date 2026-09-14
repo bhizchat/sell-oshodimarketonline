@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
-import { loadShopDetails, loadShopOverviewStats, loadStaffMembers, STAFF_PAGE_SIZE } from '@/lib/shop';
+import { loadShopDetails, loadShopOverviewStats, loadStaffMembers, STAFF_PAGE_SIZE, hasActiveAccess } from '@/lib/shop';
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 
@@ -50,6 +50,9 @@ export default async function MyShopPage({ searchParams }: { searchParams: Promi
   }
 
   const details = shop!;
+  if (!hasActiveAccess(details.subscriptionStatus)) {
+    redirect('/payments-billing');
+  }
   const staffPage = Math.max(1, Number((await searchParams).staffPage) || 1);
   const staffOffset = (staffPage - 1) * STAFF_PAGE_SIZE;
   const [stats, staffResult] = await Promise.all([

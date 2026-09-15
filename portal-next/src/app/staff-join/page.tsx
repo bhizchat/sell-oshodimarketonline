@@ -148,6 +148,14 @@ export default function StaffJoinPage() {
             {submitting ? 'Joining...' : 'Join Shop'}
           </button>
         </form>
+
+        <button
+          type="button"
+          onClick={() => router.push('/onboarding')}
+          className="mt-5 text-[0.82rem] font-semibold text-[#6c5ce7] underline"
+        >
+          ← Back to onboarding
+        </button>
       </div>
     </div>
   );

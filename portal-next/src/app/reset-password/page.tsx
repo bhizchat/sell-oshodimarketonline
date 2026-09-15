@@ -61,12 +61,18 @@ export default function ResetPasswordPage() {
     setSubmitting(true);
     const supabase = createClient();
     const { error: updateError } = await supabase.auth.updateUser({ password });
-    setSubmitting(false);
 
     if (updateError) {
+      setSubmitting(false);
       setError(updateError.message || 'Could not reset your password. Please try again.');
       return;
     }
+
+    // Sign out of the recovery session so the user has to log back in
+    // with their new password, rather than silently continuing on into
+    // the app under the token from the email link.
+    await supabase.auth.signOut();
+    setSubmitting(false);
     setDone(true);
   }
 
@@ -98,8 +104,8 @@ export default function ResetPasswordPage() {
           ) : done ? (
             <div className="rounded-lg border border-[#c9e6d3] bg-[#eafaf0] px-3.5 py-3 text-center text-[0.82rem] font-semibold text-[#1f7a45]">
               Your password has been reset.{' '}
-              <button type="button" onClick={() => router.push('/dashboard')} className="underline">
-                Continue to dashboard
+              <button type="button" onClick={() => router.push('/login')} className="underline">
+                Continue to login
               </button>
               .
             </div>

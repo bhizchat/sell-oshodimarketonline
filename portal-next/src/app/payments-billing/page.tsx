@@ -34,9 +34,7 @@ export default async function PaymentsBillingPage() {
   }
 
   const shop = ctx!;
-  if (hasActiveAccess(shop.subscriptionStatus, shop.accessUntil)) {
-    redirect('/dashboard');
-  }
+  const hasAccess = hasActiveAccess(shop.subscriptionStatus, shop.accessUntil);
   const shopMeta = shop.category
     ? shop.category + (shop.marketPlatform !== 'Not set yet' ? ' · ' + shop.marketPlatform : '')
     : shop.marketPlatform;
@@ -61,18 +59,30 @@ export default async function PaymentsBillingPage() {
             <a href="/payments-billing" className="hover:underline">
               Payments &amp; Billing
             </a>
-            <span className="mx-0.5">&rsaquo;</span>
-            <span>Choose Plan</span>
-            <span className="mx-0.5">&rsaquo;</span>
-            <span className="font-bold text-[#1d2734]">Payment Details</span>
+            {!hasAccess && (
+              <>
+                <span className="mx-0.5">&rsaquo;</span>
+                <span>Choose Plan</span>
+                <span className="mx-0.5">&rsaquo;</span>
+                <span className="font-bold text-[#1d2734]">Payment Details</span>
+              </>
+            )}
           </div>
 
-          <h1 className="text-[1.5rem] font-extrabold">Get Full Access</h1>
+          <h1 className="text-[1.5rem] font-extrabold">{hasAccess ? 'Your Plan' : 'Get Full Access'}</h1>
           <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b7280]">
-            Pay with card for a free trial that auto-renews, or pay with bank transfer for 30 days of access with no card required.
+            {hasAccess
+              ? 'Manage your subscription and billing details.'
+              : 'Pay with card for a free trial that auto-renews, or pay with bank transfer for 30 days of access with no card required.'}
           </p>
 
-          <PaymentsBillingClient isStaff={shop.isStaff} />
+          <PaymentsBillingClient
+            isStaff={shop.isStaff}
+            hasAccess={hasAccess}
+            billingMethod={shop.billingMethod}
+            subscriptionStatus={shop.subscriptionStatus}
+            accessUntil={shop.accessUntil}
+          />
         </div>
 
         <div className="flex items-center justify-between border-t border-[#e2e3e6] px-8 py-4.5 text-[0.74rem] text-[#6b7280] max-md:mb-16 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-4.5">

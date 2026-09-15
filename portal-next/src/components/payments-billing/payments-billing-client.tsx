@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import type { BillingMethod, SubscriptionStatus } from '@/lib/shop';
 
 // Client-side layer for Payments & Billing. Card entry itself happens
 // inside Paystack's own secure popup (never on this page/domain) — we
@@ -40,15 +41,26 @@ type TrialDates = {
 
 type PaymentsBillingClientProps = {
   isStaff: boolean;
+  hasAccess: boolean;
+  billingMethod: BillingMethod;
+  subscriptionStatus: SubscriptionStatus;
+  accessUntil: string | null;
 };
 
 type PaymentMethod = 'card' | 'transfer';
 
-export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClientProps) {
+export default function PaymentsBillingClient({
+  isStaff,
+  hasAccess,
+  billingMethod,
+  subscriptionStatus,
+  accessUntil,
+}: PaymentsBillingClientProps) {
   const router = useRouter();
   const [dates, setDates] = useState<TrialDates | null>(null);
   const [error, setError] = useState('');
   const [method, setMethod] = useState<PaymentMethod>('card');
+  const [renewing, setRenewing] = useState(false);
   const [status, setStatus] = useState<
     'idle' | 'starting' | 'awaiting-checkout' | 'verifying' | 'confirming' | 'success'
   >('idle');
@@ -173,6 +185,14 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
     }
   }
 
+  function handleRenewNow() {
+    setMethod('transfer');
+    setRenewing(true);
+    setError('');
+  }
+
+  const showCheckout = status === 'success' ? false : !hasAccess || renewing;
+
   return (
     <>
       <Script
@@ -182,22 +202,24 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
         onError={() => setError('Could not load the payment form. Please check your connection and refresh the page.')}
       />
 
-      <div className="mb-6 flex items-center gap-2.5">
-        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1e8b4a] text-white">✓</span>
-          <span className="text-[#1d2734]">Choose Plan</span>
+      {showCheckout && (
+        <div className="mb-6 flex items-center gap-2.5">
+          <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1e8b4a] text-white">✓</span>
+            <span className="text-[#1d2734]">Choose Plan</span>
+          </div>
+          <div className="h-0.5 w-15 bg-[#1e8b4a]" />
+          <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1e8b4a] text-white">2</span>
+            <span className="text-[#1d2734]">Payment Details</span>
+          </div>
+          <div className="h-0.5 w-15 bg-[#e2e3e6]" />
+          <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#e5e6e8] text-[#6b7280]">3</span>
+            <span>Confirmation</span>
+          </div>
         </div>
-        <div className="h-0.5 w-15 bg-[#1e8b4a]" />
-        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1e8b4a] text-white">2</span>
-          <span className="text-[#1d2734]">Payment Details</span>
-        </div>
-        <div className="h-0.5 w-15 bg-[#e2e3e6]" />
-        <div className="flex items-center gap-2 text-[0.82rem] font-bold text-[#6b7280]">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#e5e6e8] text-[#6b7280]">3</span>
-          <span>Confirmation</span>
-        </div>
-      </div>
+      )}
 
       {status === 'success' && successMethod ? (
         <div className="mx-auto max-w-xl rounded-[14px] border border-[#bfe8cf] bg-white p-8 text-center">
@@ -235,6 +257,64 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
           >
             Go to Dashboard →
           </button>
+        </div>
+      ) : !showCheckout ? (
+        <div className="mx-auto max-w-xl rounded-[14px] border border-[#e2e3e6] bg-white p-8">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-11.5 w-11.5 items-center justify-center rounded-xl bg-[#e5e6e8] text-[1.3rem]">🏬</div>
+            <div>
+              <div className="text-[1.05rem] font-extrabold">
+                {subscriptionStatus === 'trialing' ? 'Free Trial' : 'Seller Plan'}
+              </div>
+              <div className="text-[0.78rem] text-[#6b7280]">
+                {billingMethod === 'transfer' ? 'Paid via Bank Transfer' : 'Paid via Card (auto-renews)'}
+              </div>
+            </div>
+            <span className="ml-auto rounded-full bg-[#1e8b4a]/10 px-3 py-1 text-[0.74rem] font-bold text-[#1e8b4a]">
+              {subscriptionStatus === 'trialing' ? 'Trialing' : 'Active'}
+            </span>
+          </div>
+
+          <div className="mb-5 flex flex-col gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] p-3.5">
+            <div className="flex items-center justify-between text-[0.78rem]">
+              <span className="text-[#6b7280]">
+                {subscriptionStatus === 'trialing'
+                  ? 'Trial Ends'
+                  : billingMethod === 'transfer'
+                    ? 'Renew By'
+                    : 'Next Billing Date'}
+              </span>
+              <span className="font-bold">{accessUntil ? formatDate(new Date(accessUntil)) : '—'}</span>
+            </div>
+            <div className="flex items-center justify-between text-[0.78rem]">
+              <span className="text-[#6b7280]">Amount</span>
+              <span className="font-bold">{billingMethod === 'transfer' ? '₦10,000 / 30 days' : '₦10,000 / month'}</span>
+            </div>
+          </div>
+
+          {billingMethod === 'transfer' ? (
+            <>
+              <div className="mb-5 flex items-start gap-2 rounded-[10px] border border-[#f4b740]/35 bg-[#f4b740]/10 p-2.5 px-3 text-[0.76rem]">
+                <span className="shrink-0">⏰</span>
+                <span>
+                  Bank transfer doesn&apos;t auto-renew. Pay again any time before{' '}
+                  <strong>{accessUntil ? formatDate(new Date(accessUntil)) : 'your renewal date'}</strong> to keep access.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleRenewNow}
+                className="inline-flex items-center gap-1.5 rounded-[9px] bg-[#1e8b4a] px-5 py-2.5 text-[0.82rem] font-bold text-white hover:bg-[#197a40]"
+              >
+                Renew Now
+              </button>
+            </>
+          ) : (
+            <div className="flex items-start gap-2 rounded-[10px] border border-[#1e8b4a]/25 bg-[#1e8b4a]/8 p-2.5 px-3 text-[0.76rem]">
+              <span className="shrink-0 text-[#1e8b4a]">🛡</span>
+              <span>Your card auto-renews ₦10,000/month — no action needed. Contact support to make changes.</span>
+            </div>
+          )}
         </div>
       ) : (
       <div className="grid items-start gap-5 grid-cols-[minmax(0,1.4fr)_minmax(0,2.4fr)] max-[780px]:grid-cols-1">
@@ -394,6 +474,13 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
               <div className="mt-1 flex items-center justify-between gap-3">
                 <a
                   href="/dashboard"
+                  onClick={(e) => {
+                    if (renewing) {
+                      e.preventDefault();
+                      setRenewing(false);
+                      setError('');
+                    }
+                  }}
                   className="inline-flex items-center gap-1.5 rounded-[9px] border border-[#e2e3e6] bg-white px-4.5 py-2.5 text-[0.82rem] font-bold text-[#1d2734] hover:border-[#6c5ce7]"
                 >
                   ← Back

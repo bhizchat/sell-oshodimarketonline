@@ -103,33 +103,33 @@ export default function OnboardingStep2Page() {
   if (checkingSession) return null;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#392065] px-4 py-8">
-      <div className="flex w-full max-w-245 overflow-hidden rounded-[22px] border border-white/8 bg-[linear-gradient(160deg,#4B2E83_0%,#2d1850_100%)] text-white shadow-[0_24px_60px_rgba(0,0,0,0.5)] max-md:flex-col">
+    <div className="flex min-h-screen items-center justify-center bg-[#e4d7fc] px-4 py-8">
+      <div className="flex w-full max-w-245 overflow-hidden rounded-[22px] border border-[#d2c2f8] bg-gradient-to-b from-[#e4d7fc] to-[#d2c2f8] text-[#1d2734] shadow-[0_24px_60px_rgba(0,0,0,0.15)] max-md:flex-col">
         {/* Left: brand / info column */}
-        <section className="flex flex-none basis-75 flex-col border-r border-white/8 p-8 max-md:basis-auto max-md:border-r-0 max-md:border-b max-md:p-6">
+        <section className="flex flex-none basis-75 flex-col border-r border-[#c7b8f0] p-8 max-md:basis-auto max-md:border-r-0 max-md:border-b max-md:p-6">
           <div className="mb-7 flex flex-col gap-1">
             <Image src="/assets/oshodi-logo.png" alt="Oshodi Market Online logo" width={130} height={34} className="h-auto w-32.5 object-contain" />
-            <div className="mt-px text-[0.58rem] font-bold uppercase tracking-[0.14em] text-[#6c5ce7]">
+            <div className="mt-px text-[0.58rem] font-bold uppercase tracking-[0.14em] text-[#4B2E83]">
               Local Markets. Limitless Possibilities.
             </div>
           </div>
 
-          <div className="mb-4 flex h-10.5 w-10.5 items-center justify-center rounded-[10px] border border-white/14 bg-linear-to-br from-[#e5e6e8] to-[#6c5ce7]">
+          <div className="mb-4 flex h-10.5 w-10.5 items-center justify-center rounded-[10px] border border-[#d2c2f8] bg-gradient-to-br from-[#e4d7fc] to-[#c7b8f0]">
             <Image src="/assets/shop.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
           </div>
-          <h2 className="mb-3 text-[1.4rem] font-black leading-[1.15] tracking-tight">
+          <h2 className="mb-3 text-[1.4rem] font-black leading-[1.15] tracking-tight text-[#1d2734]">
             Let&apos;s set up your <span className="text-[#6c5ce7]">shop</span>
           </h2>
-          <p className="mb-auto text-[0.85rem] text-[#d2c2f8]">
+          <p className="mb-auto text-[0.85rem] text-[#4b4d57]">
             Tell us about you and your business so we can help you get started.
           </p>
 
-          <div className="mt-6 flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/6 px-3.5 py-3">
+          <div className="mt-6 flex items-start gap-2.5 rounded-xl border border-[#c7b8f0] bg-white/40 px-3.5 py-3">
             <div className="shrink-0">
               <Image src="/assets/lock.png" alt="" width={16} height={16} className="h-4 w-4 object-contain" />
             </div>
-            <div className="text-[0.74rem] text-[#d2c2f8]">
-              <strong className="text-white">Your Information is Safe.</strong> We take your privacy seriously and your information is protected with top security.
+            <div className="text-[0.74rem] text-[#4b4d57]">
+              <strong className="text-[#1d2734]">Your Information is Safe.</strong> We take your privacy seriously and your information is protected with top security.
             </div>
           </div>
         </section>

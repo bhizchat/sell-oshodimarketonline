@@ -57,21 +57,21 @@ export default function OnboardingPage() {
   if (checkingSession) return null;
 
   return (
-    <div className="flex min-h-screen bg-[#392065] max-[900px]:flex-col">
+    <div className="flex min-h-screen bg-[#e4d7fc] max-[900px]:flex-col">
       {/* Left: brand / marketing panel */}
-      <section className="relative flex flex-[1.05] flex-col overflow-hidden bg-[linear-gradient(160deg,#4B2E83_0%,#2d1850_100%)] p-12 text-white max-[900px]:min-h-65 max-[900px]:p-8 max-[480px]:p-6">
+      <section className="relative flex flex-[1.05] flex-col overflow-hidden bg-gradient-to-b from-[#e4d7fc] to-[#d2c2f8] p-12 text-[#1d2734] max-[900px]:min-h-65 max-[900px]:p-8 max-[480px]:p-6">
         <div className="flex flex-col gap-1">
           <Image src="/assets/oshodi-logo.png" alt="Oshodi Market Online logo" width={150} height={40} className="h-auto w-[150px] object-contain" />
-          <div className="mt-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-[#6c5ce7]">
+          <div className="mt-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-[#4B2E83]">
             Local Markets. Limitless Possibilities.
           </div>
         </div>
 
         <div className="mt-14 max-w-[420px] max-[900px]:mt-6">
-          <h1 className="mb-3.5 text-[2.1rem] font-black leading-[1.15] tracking-tight text-white max-[900px]:text-[1.6rem]">
+          <h1 className="mb-3.5 text-[2.1rem] font-black leading-[1.15] tracking-tight text-[#1d2734] max-[900px]:text-[1.6rem]">
             Let&apos;s get your digital shop <span className="text-[#6c5ce7]">online.</span>
           </h1>
-          <p className="mb-8.5 text-[0.9rem] text-[#d2c2f8]">
+          <p className="mb-8.5 text-[0.9rem] text-[#4b4d57]">
             Oshodi Market Online connects local markets to customers everywhere. Choose your market, set up your shop, and start growing.
           </p>
 
@@ -140,12 +140,12 @@ export default function OnboardingPage() {
 function Feature({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (
     <div className="flex items-start gap-3.5">
-      <div className="flex h-9.5 w-9.5 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-white/15 bg-gradient-to-br from-[#e5e6e8] to-[#6c5ce7]">
+      <div className="flex h-9.5 w-9.5 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#d2c2f8] bg-gradient-to-br from-[#e4d7fc] to-[#c7b8f0]">
         <Image src={icon} alt="" width={22} height={22} className="h-[22px] w-[22px] object-contain" />
       </div>
       <div>
-        <div className="mb-0.5 text-[0.9rem] font-bold text-white">{title}</div>
-        <div className="text-[0.8rem] text-[#a9aaad]">{desc}</div>
+        <div className="mb-0.5 text-[0.9rem] font-bold text-[#1d2734]">{title}</div>
+        <div className="text-[0.8rem] text-[#6b7280]">{desc}</div>
       </div>
     </div>
   );

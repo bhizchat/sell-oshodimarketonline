@@ -13,7 +13,9 @@ export const CARD_VERIFICATION_AMOUNT_KOBO = 5000;
 // Real recurring plan amount, kept here only for reference/UI copy —
 // the source of truth for what Paystack actually charges is the Plan
 // itself (PAYSTACK_PLAN_CODE), created once via the Paystack Plan API.
-export const SUBSCRIPTION_AMOUNT_KOBO = 1_000_000; // ₦10,000
+// TEMP: lowered to ₦1,000 for live testing of the transfer flow —
+// change back to 1_000_000 (₦10,000) before going live for real users.
+export const SUBSCRIPTION_AMOUNT_KOBO = 100_000; // ₦1,000 (TESTING)
 
 async function paystackFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;

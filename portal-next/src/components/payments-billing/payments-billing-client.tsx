@@ -306,7 +306,7 @@ export default function PaymentsBillingClient({ isStaff }: PaymentsBillingClient
                   {status === 'idle' && scriptReady && (
                     <>
                       <Image src="/assets/lock.png" alt="" width={14} height={14} className="object-contain invert" />
-                      {method === 'card' ? 'Pay with Paystack' : 'Pay ₦10,000 with Transfer'}
+                      {method === 'card' ? 'Pay with Card' : 'Pay with Transfer'}
                     </>
                   )}
                   {status === 'starting' && 'Starting checkout...'}

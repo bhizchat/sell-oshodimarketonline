@@ -19,7 +19,7 @@ export default async function PaymentsBillingPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login');
+    redirect('/login?next=/payments-billing');
   }
 
   const meta = (user.user_metadata as Record<string, unknown>) || {};

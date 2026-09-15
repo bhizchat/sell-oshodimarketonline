@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import BrandPanel from '@/components/brand-panel';
 
@@ -11,6 +12,25 @@ import BrandPanel from '@/components/brand-panel';
 // wired to the SSR-aware browser client so the session lands in a cookie
 // the server can read on the very next request.
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams();
+  // Only allow same-origin relative paths (must start with a single "/",
+  // never "//" or contain "://") so this can't be turned into an open
+  // redirect by crafting a link like /login?next=https://evil.com or
+  // ?next=//evil.com. Lets links like the transfer-reminder email's
+  // "Renew with Bank Transfer" button send a signed-out user back to
+  // /payments-billing after they log in, instead of always /dashboard.
+  const rawNext = searchParams.get('next');
+  const next =
+    rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') && !rawNext.includes('://') ? rawNext : '/dashboard';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +53,7 @@ export default function LoginPage() {
       setError(result.error || 'Unable to sign in. Please check your details.');
       return;
     }
-    window.location.href = '/dashboard';
+    window.location.href = next;
   }
 
   async function handleGoogleSignIn() {
@@ -41,7 +61,7 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
     });
     if (oauthError) {
       setError(oauthError.message || 'Unable to continue with Google. Please try again.');

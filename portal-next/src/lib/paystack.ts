@@ -43,12 +43,19 @@ export type PaystackInitializeResponse = {
 // Initializes the small card-verification transaction. `callback_url` is
 // only used as a fallback for redirect-based checkout; the popup flow
 // resolves via the client-side onSuccess callback + our own /verify call.
+//
+// `channels` restricts which payment methods Paystack's popup offers —
+// used to force the "Pay with Transfer" flow (bank_transfer only) for
+// the real ₦10,000 transfer-based subscription payment, as opposed to
+// the default card-only ₦50 verification charge. Omit it to let Paystack
+// show whatever channels are enabled on the dashboard.
 export function initializeTransaction(params: {
   email: string;
   amountKobo: number;
   reference: string;
   metadata: Record<string, unknown>;
   callbackUrl: string;
+  channels?: string[];
 }) {
   return paystackFetch<PaystackInitializeResponse>('/transaction/initialize', {
     method: 'POST',
@@ -59,6 +66,7 @@ export function initializeTransaction(params: {
       currency: 'NGN',
       callback_url: params.callbackUrl,
       metadata: params.metadata,
+      ...(params.channels ? { channels: params.channels } : {}),
     }),
   });
 }

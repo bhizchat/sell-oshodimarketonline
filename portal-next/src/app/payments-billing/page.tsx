@@ -34,7 +34,7 @@ export default async function PaymentsBillingPage() {
   }
 
   const shop = ctx!;
-  if (hasActiveAccess(shop.subscriptionStatus)) {
+  if (hasActiveAccess(shop.subscriptionStatus, shop.accessUntil)) {
     redirect('/dashboard');
   }
   const shopMeta = shop.category
@@ -64,12 +64,12 @@ export default async function PaymentsBillingPage() {
             <span className="mx-0.5">&rsaquo;</span>
             <span>Choose Plan</span>
             <span className="mx-0.5">&rsaquo;</span>
-            <span className="font-bold text-[#1d2734]">Start Free Trial</span>
+            <span className="font-bold text-[#1d2734]">Payment Details</span>
           </div>
 
-          <h1 className="text-[1.5rem] font-extrabold">Start Your Free Trial</h1>
+          <h1 className="text-[1.5rem] font-extrabold">Get Full Access</h1>
           <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b7280]">
-            Get full access to all features for 1 month. Cancel anytime before your trial ends and you won&apos;t be charged.
+            Pay with card for a free trial that auto-renews, or pay with bank transfer for 30 days of access with no card required.
           </p>
 
           <PaymentsBillingClient isStaff={shop.isStaff} />

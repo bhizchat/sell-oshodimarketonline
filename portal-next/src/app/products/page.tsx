@@ -32,7 +32,7 @@ export default async function ProductsPage() {
   }
 
   const shop = ctx!;
-  if (!hasActiveAccess(shop.subscriptionStatus)) {
+  if (!hasActiveAccess(shop.subscriptionStatus, shop.accessUntil)) {
     redirect('/payments-billing');
   }
   const [productsPage, stockStats] = shop.shopId

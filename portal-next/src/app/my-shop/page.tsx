@@ -49,7 +49,7 @@ export default async function MyShopPage({ searchParams }: { searchParams: Promi
   }
 
   const details = shop!;
-  if (!hasActiveAccess(details.subscriptionStatus)) {
+  if (!hasActiveAccess(details.subscriptionStatus, details.accessUntil)) {
     redirect('/payments-billing');
   }
   const staffPage = Math.max(1, Number((await searchParams).staffPage) || 1);

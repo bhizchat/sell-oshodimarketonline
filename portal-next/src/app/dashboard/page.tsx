@@ -33,7 +33,7 @@ export default async function DashboardPage() {
   }
 
   const shop = ctx!;
-  if (!hasActiveAccess(shop.subscriptionStatus)) {
+  if (!hasActiveAccess(shop.subscriptionStatus, shop.accessUntil)) {
     redirect('/payments-billing');
   }
 

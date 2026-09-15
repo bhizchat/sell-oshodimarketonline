@@ -23,6 +23,45 @@ export async function POST(request: NextRequest) {
     case 'charge.success': {
       const data = event.data;
       const planCode = data.plan?.plan_code;
+      const purpose = data.metadata?.purpose;
+
+      // Bank-transfer subscription payments (see /api/paystack/initialize
+      // + /verify) — handled here because a transfer can complete several
+      // minutes after the customer left the checkout tab, so the
+      // browser-side /verify call may never run. This is the ONLY
+      // reliable confirmation path for that payment, per Paystack's own
+      // recommendation to rely on webhooks for transfer payments.
+      if (purpose === 'subscription_transfer') {
+        const reference = data.reference;
+        const { data: payment } = await supabase
+          .from('sx_payments')
+          .select('id, shop_id, status')
+          .eq('reference', reference)
+          .maybeSingle();
+
+        // Already credited by /verify or a duplicate webhook delivery —
+        // Paystack can and does resend webhooks, so this must be a no-op.
+        if (payment && payment.status !== 'success') {
+          const accessUntil = new Date();
+          accessUntil.setDate(accessUntil.getDate() + 30);
+
+          await supabase
+            .from('sx_payments')
+            .update({ status: 'success', paid_at: new Date().toISOString(), paystack_transaction_id: String(data.id) })
+            .eq('id', payment.id);
+
+          await supabase
+            .from('sx_shops')
+            .update({
+              subscription_status: 'active',
+              billing_method: 'transfer',
+              paystack_customer_code: data.customer?.customer_code || null,
+              next_billing_at: accessUntil.toISOString(),
+            })
+            .eq('id', payment.shop_id);
+        }
+        break;
+      }
 
       // Only recurring subscription charges get to this branch — the
       // one-off ₦50 verification charge is confirmed via /api/paystack/verify

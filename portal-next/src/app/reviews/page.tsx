@@ -33,7 +33,7 @@ export default async function ReviewsPage() {
   }
 
   const shop = ctx!;
-  if (!hasActiveAccess(shop.subscriptionStatus)) {
+  if (!hasActiveAccess(shop.subscriptionStatus, shop.accessUntil)) {
     redirect('/payments-billing');
   }
   const [reviewsData, statsEntries] = shop.shopId

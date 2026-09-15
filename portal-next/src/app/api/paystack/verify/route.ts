@@ -4,12 +4,24 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyTransaction, refundTransaction, createSubscription } from '@/lib/paystack';
 
 const TRIAL_DAYS = 30;
+const TRANSFER_ACCESS_DAYS = 30;
 
-// Confirms a checkout the client just completed via the Paystack popup:
-// verifies the transaction server-side (never trust the browser alone),
-// marks the sx_payments row, saves the reusable card authorization onto
-// the shop, refunds the small verification charge, and schedules the
-// real ₦10,000/month subscription to start once the free trial ends.
+// Confirms a checkout the client just completed via the Paystack popup.
+// Two payment purposes are handled very differently:
+//
+//   'card_verification' — a refundable ₦50 charge. Saves the reusable
+//     card authorization onto the shop, refunds the charge, and
+//     schedules the real ₦10,000/month subscription to start once the
+//     free trial ends (Paystack auto-debits from here on).
+//
+//   'subscription_transfer' — the REAL ₦10,000, paid via bank transfer.
+//     There is no reusable authorization from a transfer, so nothing is
+//     scheduled/auto-debited and nothing is refunded (this is real
+//     revenue) — the shop simply gets 30 days of access and must pay
+//     again manually before it lapses. Note: transfers can also complete
+//     asynchronously after the customer has closed this tab, in which
+//     case the webhook (not this route) is what actually credits the
+//     payment — see /api/paystack/webhook.
 export async function GET(request: NextRequest) {
   const reference = request.nextUrl.searchParams.get('reference');
   if (!reference) {
@@ -37,7 +49,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Payment not found.' }, { status: 404 });
   }
 
-  // Already processed (e.g. user refreshed the page) — just report success.
+  // Already processed (e.g. user refreshed the page, or the webhook beat
+  // us to it for a transfer payment) — just report success.
   if (payment.status === 'success' || payment.status === 'refunded') {
     return NextResponse.json({ status: 'success' });
   }
@@ -49,6 +62,28 @@ export async function GET(request: NextRequest) {
     if (tx.status !== 'success') {
       await admin.from('sx_payments').update({ status: 'failed' }).eq('id', payment.id);
       return NextResponse.json({ status: 'failed' }, { status: 200 });
+    }
+
+    if (payment.purpose === 'subscription_transfer') {
+      const accessUntil = new Date();
+      accessUntil.setDate(accessUntil.getDate() + TRANSFER_ACCESS_DAYS);
+
+      await admin
+        .from('sx_payments')
+        .update({ status: 'success', paid_at: new Date().toISOString(), paystack_transaction_id: String(tx.id) })
+        .eq('id', payment.id);
+
+      await admin
+        .from('sx_shops')
+        .update({
+          subscription_status: 'active',
+          billing_method: 'transfer',
+          paystack_customer_code: tx.customer.customer_code,
+          next_billing_at: accessUntil.toISOString(),
+        })
+        .eq('id', payment.shop_id);
+
+      return NextResponse.json({ status: 'success' });
     }
 
     await admin
@@ -82,6 +117,7 @@ export async function GET(request: NextRequest) {
       .from('sx_shops')
       .update({
         subscription_status: 'trialing',
+        billing_method: 'card',
         paystack_customer_code: tx.customer.customer_code,
         paystack_authorization_code: tx.authorization.authorization_code,
         paystack_subscription_code: subscriptionCode,

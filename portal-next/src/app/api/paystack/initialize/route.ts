@@ -2,13 +2,21 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { resolveShopContext } from '@/lib/shop';
-import { initializeTransaction, CARD_VERIFICATION_AMOUNT_KOBO } from '@/lib/paystack';
+import { initializeTransaction, CARD_VERIFICATION_AMOUNT_KOBO, SUBSCRIPTION_AMOUNT_KOBO } from '@/lib/paystack';
 
 // Starts checkout: only the shop OWNER can initiate billing (staff share
-// the owner's subscription, they never pay separately). Creates a small
-// refundable ₦50 verification transaction whose metadata links it back
-// to this shop's shop_code, and logs a pending row in sx_payments.
-export async function POST() {
+// the owner's subscription, they never pay separately).
+//
+// Two methods are supported (chosen by the client via body.method):
+//   'card'     (default) — a small refundable ₦50 verification charge,
+//               whose reusable card authorization is used to schedule a
+//               real recurring ₦10,000/month subscription (see /verify).
+//   'transfer' — the REAL ₦10,000 charged up front via Paystack's
+//               "Pay with Transfer" channel. There's no reusable
+//               authorization from a transfer, so this grants exactly
+//               30 days of access with no auto-renewal — the shop must
+//               come back and pay again next month.
+export async function POST(request: Request) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,16 +39,29 @@ export async function POST() {
     return NextResponse.json({ error: 'Your account has no email on file.' }, { status: 400 });
   }
 
-  const reference = `sx_${shop.shopCode || shop.shopId}_${Date.now()}`;
+  let body: { method?: string };
+  try {
+    body = await request.json();
+  } catch {
+    body = {};
+  }
+  const method = body.method === 'transfer' ? 'transfer' : 'card';
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).origin;
+
+  const isTransfer = method === 'transfer';
+  const reference = `sx_${isTransfer ? 'transfer' : 'verify'}_${shop.shopCode || shop.shopId}_${Date.now()}`;
+  const amountKobo = isTransfer ? SUBSCRIPTION_AMOUNT_KOBO : CARD_VERIFICATION_AMOUNT_KOBO;
+  const purpose = isTransfer ? 'subscription_transfer' : 'card_verification';
 
   try {
     const result = await initializeTransaction({
       email,
-      amountKobo: CARD_VERIFICATION_AMOUNT_KOBO,
+      amountKobo,
       reference,
-      metadata: { shop_id: shop.shopId, shop_code: shop.shopCode, purpose: 'card_verification' },
+      metadata: { shop_id: shop.shopId, shop_code: shop.shopCode, purpose },
       callbackUrl: `${siteUrl}/payments-billing`,
+      channels: isTransfer ? ['bank_transfer'] : undefined,
     });
 
     const { error: insertError } = await createAdminClient().from('sx_payments').insert({
@@ -48,9 +69,9 @@ export async function POST() {
       shop_code: shop.shopCode,
       user_id: user.id,
       reference,
-      amount: CARD_VERIFICATION_AMOUNT_KOBO,
+      amount: amountKobo,
       status: 'pending',
-      purpose: 'card_verification',
+      purpose,
     });
 
     if (insertError) {

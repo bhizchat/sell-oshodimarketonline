@@ -1,13 +1,25 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type SubscriptionStatus = 'none' | 'trialing' | 'active' | 'past_due' | 'canceled';
+export type BillingMethod = 'card' | 'transfer' | null;
 
 // A shop can access the dashboard/products/reviews/etc once its card has
 // been verified and a trial or active subscription is underway. 'none'
 // (never started checkout), 'past_due' (a recurring charge failed) and
 // 'canceled' all route back to /payments-billing.
-export function hasActiveAccess(status: SubscriptionStatus | null): boolean {
-  return status === 'trialing' || status === 'active';
+//
+// `accessUntil` is the trial/billing expiry date (trial_ends_at while
+// trialing, next_billing_at while active). Card-paying shops are kept
+// current automatically by Paystack's auto-debit + webhook (which always
+// pushes next_billing_at forward on success), so this check is normally
+// a no-op for them. Transfer-paying shops have NO auto-debit at all —
+// this is what actually enforces the "manual monthly renewal" requirement
+// once their 30 days run out, since nothing else would ever flip them out
+// of 'active'.
+export function hasActiveAccess(status: SubscriptionStatus | null, accessUntil?: string | null): boolean {
+  if (status !== 'trialing' && status !== 'active') return false;
+  if (!accessUntil) return true;
+  return new Date(accessUntil).getTime() > Date.now();
 }
 
 export type ShopContext = {
@@ -20,6 +32,8 @@ export type ShopContext = {
   marketPlatform: string;
   logoUrl: string;
   subscriptionStatus: SubscriptionStatus;
+  billingMethod: BillingMethod;
+  accessUntil: string | null;
 };
 
 // Server-side port of sx-auth.js's resolveShopContext(). Owners and staff
@@ -42,11 +56,14 @@ export async function resolveShopContext(
 
   const { data: ownedShop } = await supabase
     .from('sx_shops')
-    .select('id, shop_code, shop_name, category, market_platform, logo_url, subscription_status')
+    .select(
+      'id, shop_code, shop_name, category, market_platform, logo_url, subscription_status, billing_method, trial_ends_at, next_billing_at'
+    )
     .eq('owner_id', user.id)
     .maybeSingle();
 
   if (ownedShop) {
+    const subscriptionStatus = (ownedShop.subscription_status as SubscriptionStatus) || 'none';
     return {
       isStaff: false,
       role: 'owner',
@@ -56,19 +73,24 @@ export async function resolveShopContext(
       category: ownedShop.category || (meta.sx_category as string) || '',
       marketPlatform: ownedShop.market_platform || (meta.sx_market_platform as string) || 'Not set yet',
       logoUrl: ownedShop.logo_url || (meta.sx_shop_logo_url as string) || '',
-      subscriptionStatus: (ownedShop.subscription_status as SubscriptionStatus) || 'none',
+      subscriptionStatus,
+      billingMethod: (ownedShop.billing_method as BillingMethod) || null,
+      accessUntil: (subscriptionStatus === 'trialing' ? ownedShop.trial_ends_at : ownedShop.next_billing_at) || null,
     };
   }
 
   const { data: membership } = await supabase
     .from('sx_shop_members')
-    .select('role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status)')
+    .select(
+      'role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status, billing_method, trial_ends_at, next_billing_at)'
+    )
     .eq('user_id', user.id)
     .maybeSingle();
 
   if (membership) {
     const shopRelation = membership.sx_shops as unknown;
     const joinedShop = ((Array.isArray(shopRelation) ? shopRelation[0] : shopRelation) as Record<string, unknown>) || {};
+    const subscriptionStatus = (joinedShop.subscription_status as SubscriptionStatus) || 'none';
     return {
       isStaff: true,
       role: (membership.role as string) || null,
@@ -78,7 +100,9 @@ export async function resolveShopContext(
       category: (joinedShop.category as string) || '',
       marketPlatform: (joinedShop.market_platform as string) || 'Not set yet',
       logoUrl: (joinedShop.logo_url as string) || '',
-      subscriptionStatus: ((joinedShop.subscription_status as SubscriptionStatus) || 'none'),
+      subscriptionStatus,
+      billingMethod: (joinedShop.billing_method as BillingMethod) || null,
+      accessUntil: ((subscriptionStatus === 'trialing' ? joinedShop.trial_ends_at : joinedShop.next_billing_at) as string) || null,
     };
   }
 
@@ -201,6 +225,7 @@ export type ShopDetails = {
   inviteCode: string | null;
   memberSince: string | null;
   subscriptionStatus: SubscriptionStatus;
+  accessUntil: string | null;
 };
 
 // Server-side port of my-shop.html's guardMyShop() shop-loading section:
@@ -223,7 +248,7 @@ export async function loadShopDetails(
 
   const { data: ownedShop } = await supabase
     .from('sx_shops')
-    .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status')
+    .select('id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status, trial_ends_at, next_billing_at')
     .eq('owner_id', user.id)
     .maybeSingle();
 
@@ -234,7 +259,7 @@ export async function loadShopDetails(
     const { data: membership } = await supabase
       .from('sx_shop_members')
       .select(
-        'role, sx_shops(id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status)'
+        'role, sx_shops(id, shop_code, shop_name, category, market_platform, phone, whatsapp, location, tagline, logo_url, banner_url, invite_code, created_at, subscription_status, trial_ends_at, next_billing_at)'
       )
       .eq('user_id', user.id)
       .maybeSingle();
@@ -245,6 +270,8 @@ export async function loadShopDetails(
     role = (membership.role as string) || null;
     isStaff = true;
   }
+
+  const subscriptionStatus = (shopRow.subscription_status as SubscriptionStatus) || 'none';
 
   return {
     id: (shopRow.id as string) || null,
@@ -262,7 +289,8 @@ export async function loadShopDetails(
     bannerUrl: (shopRow.banner_url as string) || (meta.sx_shop_banner_url as string) || '',
     inviteCode: (shopRow.invite_code as string) || null,
     memberSince: (shopRow.created_at as string) || user.created_at || null,
-    subscriptionStatus: ((shopRow.subscription_status as SubscriptionStatus) || 'none'),
+    subscriptionStatus,
+    accessUntil: ((subscriptionStatus === 'trialing' ? shopRow.trial_ends_at : shopRow.next_billing_at) as string) || null,
   };
 }
 

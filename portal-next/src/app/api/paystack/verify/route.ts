@@ -4,6 +4,11 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { verifyTransaction, refundTransaction, createSubscription } from '@/lib/paystack';
 
 const TRIAL_DAYS = 30;
+// TEMP: shortened trial for live testing of the card subscription flow
+// (so the real recurring charge fires quickly instead of waiting 30
+// days). Revert by deleting this constant and the override below, and
+// restoring `trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);`.
+const TRIAL_MINUTES_TEST_OVERRIDE = 5;
 const TRANSFER_ACCESS_DAYS = 30;
 
 // Confirms a checkout the client just completed via the Paystack popup.
@@ -97,7 +102,8 @@ export async function GET(request: NextRequest) {
       .eq('id', payment.id);
 
     const trialEndsAt = new Date();
-    trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
+    trialEndsAt.setMinutes(trialEndsAt.getMinutes() + TRIAL_MINUTES_TEST_OVERRIDE);
+    // trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS); // ORIGINAL — restore this line and delete the override above after testing
 
     let subscriptionCode: string | null = null;
     let emailToken: string | null = null;

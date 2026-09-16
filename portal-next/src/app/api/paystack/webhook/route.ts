@@ -111,11 +111,18 @@ export async function POST(request: NextRequest) {
 
     case 'subscription.disable':
     case 'subscription.not_renew': {
+      // Marks the subscription as not-renewing without immediately
+      // revoking access — the shop keeps access until trial_ends_at /
+      // next_billing_at naturally passes (hasActiveAccess() in lib/shop.ts
+      // already enforces that date regardless of subscription_status).
+      // This mirrors what /api/paystack/cancel-subscription does when the
+      // owner cancels from our own UI, and also covers the case where a
+      // subscription is disabled directly from the Paystack dashboard.
       const customerCode = event.data.customer?.customer_code;
       if (customerCode) {
         await supabase
           .from('sx_shops')
-          .update({ subscription_status: 'canceled' })
+          .update({ cancel_at_period_end: true })
           .eq('paystack_customer_code', customerCode);
       }
       break;

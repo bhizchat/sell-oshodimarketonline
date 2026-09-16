@@ -45,6 +45,7 @@ type PaymentsBillingClientProps = {
   billingMethod: BillingMethod;
   subscriptionStatus: SubscriptionStatus;
   accessUntil: string | null;
+  cancelAtPeriodEnd: boolean;
 };
 
 type PaymentMethod = 'card' | 'transfer';
@@ -55,6 +56,7 @@ export default function PaymentsBillingClient({
   billingMethod,
   subscriptionStatus,
   accessUntil,
+  cancelAtPeriodEnd,
 }: PaymentsBillingClientProps) {
   const router = useRouter();
   const [dates, setDates] = useState<TrialDates | null>(null);
@@ -67,6 +69,9 @@ export default function PaymentsBillingClient({
   const [scriptReady, setScriptReady] = useState(false);
   const [successMethod, setSuccessMethod] = useState<PaymentMethod | null>(null);
   const [lastReference, setLastReference] = useState<string | null>(null);
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+  const [cancelError, setCancelError] = useState('');
 
   useEffect(() => {
     const start = new Date();
@@ -191,6 +196,24 @@ export default function PaymentsBillingClient({
     setError('');
   }
 
+  async function handleConfirmCancel() {
+    setCanceling(true);
+    setCancelError('');
+    try {
+      const res = await fetch('/api/paystack/cancel-subscription', { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Could not cancel subscription.');
+      }
+      setConfirmingCancel(false);
+      router.refresh();
+    } catch (err) {
+      setCancelError(err instanceof Error ? err.message : 'Could not cancel subscription.');
+    } finally {
+      setCanceling(false);
+    }
+  }
+
   const showCheckout = status === 'success' ? false : !hasAccess || renewing;
 
   return (
@@ -310,10 +333,59 @@ export default function PaymentsBillingClient({
               </button>
             </>
           ) : (
-            <div className="flex items-start gap-2 rounded-[10px] border border-[#1e8b4a]/25 bg-[#1e8b4a]/8 p-2.5 px-3 text-[0.76rem]">
-              <span className="shrink-0 text-[#1e8b4a]">🛡</span>
-              <span>Your card auto-renews ₦10,000/month — no action needed. Contact support to make changes.</span>
-            </div>
+            <>
+              <div className="mb-5 flex items-start gap-2 rounded-[10px] border border-[#1e8b4a]/25 bg-[#1e8b4a]/8 p-2.5 px-3 text-[0.76rem]">
+                <span className="shrink-0 text-[#1e8b4a]">🛡</span>
+                <span>Your card auto-renews ₦10,000/month — no action needed. Contact support to make changes.</span>
+              </div>
+
+              {cancelAtPeriodEnd ? (
+                <div className="flex items-start gap-2 rounded-[10px] border border-[#f4b740]/35 bg-[#f4b740]/10 p-2.5 px-3 text-[0.76rem]">
+                  <span className="shrink-0">⏰</span>
+                  <span>
+                    Your subscription is canceled and won&apos;t renew. You&apos;ll keep access until{' '}
+                    <strong>{accessUntil ? formatDate(new Date(accessUntil)) : 'your current period ends'}</strong>.
+                  </span>
+                </div>
+              ) : confirmingCancel ? (
+                <div className="rounded-[10px] border border-[#e2554a]/30 bg-[#e2554a]/8 p-3 px-3.5">
+                  <p className="mb-3 text-[0.8rem] font-bold text-[#b3261e]">
+                    Cancel your subscription? You&apos;ll keep access until{' '}
+                    {accessUntil ? formatDate(new Date(accessUntil)) : 'your current period ends'}, then it won&apos;t renew.
+                  </p>
+                  {cancelError && <p className="mb-3 text-[0.76rem] text-[#b3261e]">{cancelError}</p>}
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleConfirmCancel}
+                      disabled={canceling}
+                      className="rounded-[9px] bg-[#b3261e] px-4 py-2 text-[0.78rem] font-bold text-white hover:bg-[#98201a] disabled:opacity-70"
+                    >
+                      {canceling ? 'Canceling…' : 'Yes, cancel'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setConfirmingCancel(false);
+                        setCancelError('');
+                      }}
+                      disabled={canceling}
+                      className="rounded-[9px] border border-[#e2e3e6] bg-white px-4 py-2 text-[0.78rem] font-bold text-[#1d2734] hover:bg-[#f8f9fa] disabled:opacity-70"
+                    >
+                      No, keep it
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingCancel(true)}
+                  className="text-[0.78rem] font-bold text-[#b3261e] underline underline-offset-2 hover:text-[#98201a]"
+                >
+                  Cancel Subscription
+                </button>
+              )}
+            </>
           )}
         </div>
       ) : (

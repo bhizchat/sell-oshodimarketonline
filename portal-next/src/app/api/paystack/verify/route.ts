@@ -100,6 +100,7 @@ export async function GET(request: NextRequest) {
     trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
 
     let subscriptionCode: string | null = null;
+    let emailToken: string | null = null;
     try {
       const sub = await createSubscription({
         customerCode: tx.customer.customer_code,
@@ -107,6 +108,7 @@ export async function GET(request: NextRequest) {
         startDate: trialEndsAt,
       });
       subscriptionCode = sub.data.subscription_code;
+      emailToken = sub.data.email_token;
     } catch {
       // Subscription scheduling failed — the card is still verified and
       // saved, so this can be retried later without re-charging the
@@ -121,6 +123,8 @@ export async function GET(request: NextRequest) {
         paystack_customer_code: tx.customer.customer_code,
         paystack_authorization_code: tx.authorization.authorization_code,
         paystack_subscription_code: subscriptionCode,
+        paystack_email_token: emailToken,
+        cancel_at_period_end: false,
         trial_ends_at: trialEndsAt.toISOString(),
         next_billing_at: trialEndsAt.toISOString(),
       })

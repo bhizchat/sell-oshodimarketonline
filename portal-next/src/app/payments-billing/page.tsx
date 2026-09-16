@@ -82,6 +82,7 @@ export default async function PaymentsBillingPage() {
             billingMethod={shop.billingMethod}
             subscriptionStatus={shop.subscriptionStatus}
             accessUntil={shop.accessUntil}
+            cancelAtPeriodEnd={shop.cancelAtPeriodEnd}
           />
         </div>
 

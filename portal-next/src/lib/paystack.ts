@@ -124,6 +124,19 @@ export function createSubscription(params: {
   });
 }
 
+// Cancels a recurring subscription so no further charges happen. Requires
+// both the subscription code AND its email_token (returned once, at
+// creation time by createSubscription above) — Paystack rejects the
+// request without it. This stops FUTURE billing only; it does not revoke
+// access already paid for for the current period (see
+// sx-subscription-cancel-schema.sql for how that's handled).
+export function disableSubscription(params: { subscriptionCode: string; emailToken: string }) {
+  return paystackFetch<{ message: string }>('/subscription/disable', {
+    method: 'POST',
+    body: JSON.stringify({ code: params.subscriptionCode, token: params.emailToken }),
+  });
+}
+
 // Verifies the `x-paystack-signature` header on incoming webhook
 // requests: HMAC-SHA512 of the raw request body, keyed with the secret
 // key. Paystack recommends this check so arbitrary requests can't be

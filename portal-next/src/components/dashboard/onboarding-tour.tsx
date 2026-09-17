@@ -123,6 +123,18 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
     setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
   }, [currentStep]);
 
+  // Targets like the stats grid or "View Shop" button can be below the
+  // fold on a scrolled phone screen — bring them into view before
+  // measuring, otherwise the bubble/spotlight would point at nothing.
+  useEffect(() => {
+    if (!visible || !currentStep) return;
+    const mobile = isMobileViewport();
+    const targetId = (mobile && MOBILE_ID_OVERRIDES[currentStep.id]) || currentStep.id;
+    const el = document.getElementById(targetId);
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, currentStep]);
+
   useEffect(() => {
     if (!visible) return;
     recalcRect();
@@ -167,25 +179,37 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
 
   // Bubble placement: prefer below the target; flip above if there isn't
   // enough room at the bottom of the viewport. Horizontally clamped so it
-  // never runs off-screen.
-  const BUBBLE_WIDTH = 300;
+  // never runs off-screen. Width shrinks on narrow phones (e.g. iPhone SE)
+  // so it never overflows the viewport.
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const BUBBLE_WIDTH = Math.min(300, viewportWidth - 24);
   const GAP = 14;
-  let bubbleTop: number;
   let bubbleLeft: number;
   let placement: 'below' | 'above' = 'below';
+  // For 'below' we anchor via `top`; for 'above' we anchor via `bottom`
+  // instead of computing `top` from the (unknown-until-rendered) bubble
+  // height — anchoring from the bottom guarantees the bubble sits fully
+  // above the target regardless of how tall its text wraps to, which
+  // matters most on mobile where targets (e.g. the bottom nav) sit right
+  // at the edge of the screen.
+  let bubbleTop: number | undefined;
+  let bubbleBottom: number | undefined;
 
   if (rect) {
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
     const spaceBelow = viewportHeight - (rect.top + rect.height);
     placement = spaceBelow < 220 && rect.top > 220 ? 'above' : 'below';
-    bubbleTop = placement === 'below' ? rect.top + rect.height + GAP : rect.top - GAP;
+    if (placement === 'below') {
+      bubbleTop = rect.top + rect.height + GAP;
+    } else {
+      bubbleBottom = viewportHeight - rect.top + GAP;
+    }
     bubbleLeft = Math.min(Math.max(rect.left + rect.width / 2 - BUBBLE_WIDTH / 2, 12), viewportWidth - BUBBLE_WIDTH - 12);
   } else {
     // No target found — center the bubble as a fallback so the tour never
     // silently breaks.
-    bubbleTop = window.innerHeight / 2 - 80;
-    bubbleLeft = window.innerWidth / 2 - BUBBLE_WIDTH / 2;
+    bubbleTop = viewportHeight / 2 - 80;
+    bubbleLeft = viewportWidth / 2 - BUBBLE_WIDTH / 2;
   }
 
   return createPortal(
@@ -211,7 +235,7 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
 
       <div
         className="fixed z-600 flex flex-col gap-3 rounded-[14px] border border-[#e2e3e6] bg-white p-4.5 text-[#1d2734] shadow-[0_16px_40px_rgba(0,0,0,0.25)]"
-        style={{ top: bubbleTop, left: bubbleLeft, width: BUBBLE_WIDTH }}
+        style={{ top: bubbleTop, bottom: bubbleBottom, left: bubbleLeft, width: BUBBLE_WIDTH }}
       >
         {rect && (
           <div

@@ -80,7 +80,7 @@ function LoginForm() {
 
           <div className="mb-7 text-center">
             <h2 className="text-[1.25rem] font-extrabold text-[#1d2734]">
-              Welcome to Oshodi<span className="text-[#6c5ce7]"> Market Online</span>
+              Sell on Oshodi<span className="text-[#6c5ce7]"> Market Online</span>
             </h2>
             <p className="mt-1 text-[0.82rem] text-[#6b7280]">Sign in to continue to your account</p>
           </div>

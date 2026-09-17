@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTourReplaySignal } from './dashboard-tour-store';
+import { closeMobileNav, openMobileNav } from './mobile-nav-store';
 
 export type OnboardingTourProps = {
   // Whether the tour should auto-show on mount (i.e. the shop owner has
@@ -60,18 +61,23 @@ const STEPS: Step[] = [
   },
 ];
 
-// On mobile, Payments & Billing and Support & Help live inside the
-// off-canvas drawer (opened via the bottom nav's "More" button) instead
-// of their own bottom-tab icon, so those two steps point at "More" there.
+// On mobile, My Shop/Products/Reviews live in the fixed bottom tab bar
+// under separate `-mobile`-suffixed ids (the desktop sidebar's copies of
+// these links exist in the DOM too, but sit off-screen via
+// `-translate-x-full` until the drawer is opened, so they must never be
+// used as measurement targets on mobile).
 const MOBILE_ID_OVERRIDES: Record<string, string> = {
-  'tour-payments-billing': 'tour-more-mobile',
-  'tour-support': 'tour-more-mobile',
+  'tour-my-shop': 'tour-my-shop-mobile',
+  'tour-products': 'tour-products-mobile',
+  'tour-reviews': 'tour-reviews-mobile',
 };
 
-const MOBILE_BODY_OVERRIDES: Record<string, string> = {
-  'tour-payments-billing': 'Tap “More” to manage your subscription, check your renewal date, or cancel anytime.',
-  'tour-support': 'Tap “More” anytime to chat with us on WhatsApp or send an email if you get stuck.',
-};
+// Payments & Billing and Support & Help have no bottom-tab icon of their
+// own on mobile — they only live inside the off-canvas drawer. For these
+// steps the tour opens the drawer itself (see the drawer-control effect
+// below) and points at the real link/button inside it, rather than
+// vaguely gesturing at the "More" button.
+const MOBILE_DRAWER_STEP_IDS = new Set(['tour-payments-billing', 'tour-support']);
 
 function isMobileViewport() {
   return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
@@ -135,6 +141,28 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, currentStep]);
 
+  // Steps that live inside the off-canvas drawer (Payments & Billing,
+  // Support & Help) need the drawer opened on mobile before their target
+  // element is visible/measurable; every other step should keep it
+  // closed. The drawer slides in with a 250ms CSS transition, so give it
+  // a moment to finish before re-measuring.
+  useEffect(() => {
+    if (!visible || !currentStep) return;
+    if (!isMobileViewport()) return;
+    if (MOBILE_DRAWER_STEP_IDS.has(currentStep.id)) {
+      openMobileNav();
+    } else {
+      closeMobileNav();
+    }
+    const timeout = setTimeout(recalcRect, 280);
+    return () => clearTimeout(timeout);
+  }, [visible, currentStep, recalcRect]);
+
+  // Make sure the drawer never lingers open once the tour ends.
+  useEffect(() => {
+    if (!visible) closeMobileNav();
+  }, [visible]);
+
   useEffect(() => {
     if (!visible) return;
     recalcRect();
@@ -160,6 +188,7 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
 
   const finish = useCallback(() => {
     setVisible(false);
+    closeMobileNav();
     fetch('/api/shop/tour-complete', { method: 'POST' }).catch(() => {});
   }, []);
 
@@ -173,8 +202,6 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
 
   if (!mounted || !visible || !currentStep) return null;
 
-  const mobile = isMobileViewport();
-  const body = (mobile && MOBILE_BODY_OVERRIDES[currentStep.id]) || currentStep.body;
   const isLastStep = stepIndex === steps.length - 1;
 
   // Bubble placement: prefer below the target; flip above if there isn't
@@ -261,7 +288,7 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
 
         <div>
           <div className="mb-1 text-[0.95rem] font-extrabold">{currentStep.title}</div>
-          <p className="text-[0.8rem] leading-snug text-[#4b5563]">{body}</p>
+          <p className="text-[0.8rem] leading-snug text-[#4b5563]">{currentStep.body}</p>
         </div>
 
         <div className="mt-1 flex justify-end">

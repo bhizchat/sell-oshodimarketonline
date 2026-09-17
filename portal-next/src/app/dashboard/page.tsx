@@ -4,6 +4,7 @@ import { resolveShopContext, loadShopStats, loadViewShopUrl, hasActiveAccess } f
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import { StatCard } from '@/components/dashboard/stat-card';
+import OnboardingTour from '@/components/dashboard/onboarding-tour';
 
 // Server Component: everything below runs on the server BEFORE any HTML
 // is sent to the browser. There is no client-side "fetch after mount"
@@ -79,6 +80,7 @@ export default async function DashboardPage() {
             {viewShopUrl && (
               <a
                 href={viewShopUrl}
+                id="tour-view-shop"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="float-right rounded-lg border border-white/[0.08] bg-[#f4b740] px-4 py-2 text-[#1d2734]"
@@ -88,7 +90,7 @@ export default async function DashboardPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+          <div id="tour-stats" className="grid grid-cols-2 gap-4 md:grid-cols-5">
             <StatCard icon="/assets/visible.png" label="Shop Views" value={stats ? String(stats.shopViews) : '0'} delta="All time" />
             <StatCard icon="/assets/telephone.png" label="Phone Calls" value={stats ? String(stats.contactClicks) : '0'} delta="All time" />
             <StatCard
@@ -109,6 +111,8 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {!shop.isStaff && <OnboardingTour autoShow={!shop.hasSeenDashboardTour} hasViewShopButton={!!viewShopUrl} />}
 
         <div className="flex items-center justify-between border-t border-[#e2e3e6] px-8 py-4.5 text-[0.74rem] text-[#6b7280] max-md:mb-16 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-4.5">
           <div>© 2026 Oshodi Market Online. All rights reserved.</div>

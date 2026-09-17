@@ -1,0 +1,256 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useTourReplaySignal } from './dashboard-tour-store';
+
+export type OnboardingTourProps = {
+  // Whether the tour should auto-show on mount (i.e. the shop owner has
+  // never seen it before). Ignored while a manual replay is active.
+  autoShow: boolean;
+  // Whether the "View Shop" button exists on the dashboard right now —
+  // if not (e.g. market platform not chosen yet), that step is skipped.
+  hasViewShopButton: boolean;
+};
+
+type Step = {
+  // Element id (without the leading '#') to point the bubble at. Mobile
+  // steps that don't have a bottom-nav equivalent point at the "More"
+  // button instead — see MOBILE_ID_OVERRIDES below.
+  id: string;
+  title: string;
+  body: string;
+};
+
+const STEPS: Step[] = [
+  {
+    id: 'tour-stats',
+    title: 'Your Dashboard',
+    body: 'This is your Dashboard — a quick snapshot of how your shop is doing: views, calls, WhatsApp messages, and more.',
+  },
+  {
+    id: 'tour-my-shop',
+    title: 'My Shop',
+    body: 'Head to My Shop to update your shop name, logo, and category anytime.',
+  },
+  {
+    id: 'tour-products',
+    title: 'Add Your Products',
+    body: "This is where you add and manage your products. Tap here to upload photos, prices, and descriptions so customers can see what you sell.",
+  },
+  {
+    id: 'tour-view-shop',
+    title: 'Preview Your Shop',
+    body: "Ready to see it live? Tap \u201cView Shop\u201d anytime to preview your shop exactly as customers see it.",
+  },
+  {
+    id: 'tour-reviews',
+    title: 'Customer Reviews',
+    body: 'Customer reviews will show up here — you can read and reply to them to build trust.',
+  },
+  {
+    id: 'tour-payments-billing',
+    title: 'Payments & Billing',
+    body: 'Manage your subscription, check your renewal date, or cancel anytime from here.',
+  },
+  {
+    id: 'tour-support',
+    title: 'Need Help?',
+    body: 'Stuck on anything? Tap here anytime to chat with us on WhatsApp or send an email.',
+  },
+];
+
+// On mobile, Payments & Billing and Support & Help live inside the
+// off-canvas drawer (opened via the bottom nav's "More" button) instead
+// of their own bottom-tab icon, so those two steps point at "More" there.
+const MOBILE_ID_OVERRIDES: Record<string, string> = {
+  'tour-payments-billing': 'tour-more-mobile',
+  'tour-support': 'tour-more-mobile',
+};
+
+const MOBILE_BODY_OVERRIDES: Record<string, string> = {
+  'tour-payments-billing': 'Tap “More” to manage your subscription, check your renewal date, or cancel anytime.',
+  'tour-support': 'Tap “More” anytime to chat with us on WhatsApp or send an email if you get stuck.',
+};
+
+function isMobileViewport() {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+}
+
+type Rect = { top: number; left: number; width: number; height: number };
+
+export default function OnboardingTour({ autoShow, hasViewShopButton }: OnboardingTourProps) {
+  const replaySignal = useTourReplaySignal();
+  const [visible, setVisible] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [rect, setRect] = useState<Rect | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  const steps = hasViewShopButton ? STEPS : STEPS.filter((s) => s.id !== 'tour-view-shop');
+
+  useEffect(() => setMounted(true), []);
+
+  // Auto-show on first mount if the owner hasn't seen it yet.
+  useEffect(() => {
+    if (autoShow) {
+      setStepIndex(0);
+      setVisible(true);
+    }
+    // Only ever check this once on mount — `visible` is what drives it after that.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Manual replay from Sidebar's "Take the tour again" link.
+  useEffect(() => {
+    if (replaySignal > 0) {
+      setStepIndex(0);
+      setVisible(true);
+    }
+  }, [replaySignal]);
+
+  const currentStep = steps[stepIndex];
+
+  const recalcRect = useCallback(() => {
+    if (!currentStep) return;
+    const mobile = isMobileViewport();
+    const targetId = (mobile && MOBILE_ID_OVERRIDES[currentStep.id]) || currentStep.id;
+    const el = document.getElementById(targetId);
+    if (!el) {
+      setRect(null);
+      return;
+    }
+    const r = el.getBoundingClientRect();
+    setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+  }, [currentStep]);
+
+  useEffect(() => {
+    if (!visible) return;
+    recalcRect();
+    window.addEventListener('resize', recalcRect);
+    window.addEventListener('scroll', recalcRect, true);
+    return () => {
+      window.removeEventListener('resize', recalcRect);
+      window.removeEventListener('scroll', recalcRect, true);
+    };
+  }, [visible, recalcRect]);
+
+  // If the current step's target isn't in the DOM (e.g. mid-render),
+  // give layout a tick to settle then recheck; skip forward if it still
+  // never appears.
+  useEffect(() => {
+    if (!visible || !currentStep) return;
+    if (rect) return;
+    const timeout = setTimeout(() => {
+      recalcRect();
+    }, 150);
+    return () => clearTimeout(timeout);
+  }, [visible, currentStep, rect, recalcRect]);
+
+  const finish = useCallback(() => {
+    setVisible(false);
+    fetch('/api/shop/tour-complete', { method: 'POST' }).catch(() => {});
+  }, []);
+
+  function handleNext() {
+    if (stepIndex >= steps.length - 1) {
+      finish();
+      return;
+    }
+    setStepIndex((i) => i + 1);
+  }
+
+  if (!mounted || !visible || !currentStep) return null;
+
+  const mobile = isMobileViewport();
+  const body = (mobile && MOBILE_BODY_OVERRIDES[currentStep.id]) || currentStep.body;
+  const isLastStep = stepIndex === steps.length - 1;
+
+  // Bubble placement: prefer below the target; flip above if there isn't
+  // enough room at the bottom of the viewport. Horizontally clamped so it
+  // never runs off-screen.
+  const BUBBLE_WIDTH = 300;
+  const GAP = 14;
+  let bubbleTop: number;
+  let bubbleLeft: number;
+  let placement: 'below' | 'above' = 'below';
+
+  if (rect) {
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const spaceBelow = viewportHeight - (rect.top + rect.height);
+    placement = spaceBelow < 220 && rect.top > 220 ? 'above' : 'below';
+    bubbleTop = placement === 'below' ? rect.top + rect.height + GAP : rect.top - GAP;
+    bubbleLeft = Math.min(Math.max(rect.left + rect.width / 2 - BUBBLE_WIDTH / 2, 12), viewportWidth - BUBBLE_WIDTH - 12);
+  } else {
+    // No target found — center the bubble as a fallback so the tour never
+    // silently breaks.
+    bubbleTop = window.innerHeight / 2 - 80;
+    bubbleLeft = window.innerWidth / 2 - BUBBLE_WIDTH / 2;
+  }
+
+  return createPortal(
+    <>
+      {/* Dimmed backdrop with a spotlight cutout around the target element */}
+      <div
+        className="fixed inset-0 z-590 transition-all duration-200"
+        style={
+          rect
+            ? {
+                top: rect.top - 6,
+                left: rect.left - 6,
+                width: rect.width + 12,
+                height: rect.height + 12,
+                position: 'fixed',
+                borderRadius: 12,
+                boxShadow: '0 0 0 9999px rgba(15, 12, 30, 0.6)',
+              }
+            : { boxShadow: '0 0 0 9999px rgba(15, 12, 30, 0.6)' }
+        }
+        aria-hidden="true"
+      />
+
+      <div
+        className="fixed z-600 flex flex-col gap-3 rounded-[14px] border border-[#e2e3e6] bg-white p-4.5 text-[#1d2734] shadow-[0_16px_40px_rgba(0,0,0,0.25)]"
+        style={{ top: bubbleTop, left: bubbleLeft, width: BUBBLE_WIDTH }}
+      >
+        {rect && (
+          <div
+            className={`absolute h-3 w-3 rotate-45 border border-[#e2e3e6] bg-white ${
+              placement === 'below' ? '-top-1.5 border-b-0 border-r-0' : '-bottom-1.5 border-t-0 border-l-0'
+            }`}
+            style={{ left: Math.min(Math.max(rect.left + rect.width / 2 - bubbleLeft - 6, 12), BUBBLE_WIDTH - 24) }}
+          />
+        )}
+
+        <div className="flex items-center justify-between">
+          <span className="text-[0.68rem] font-bold uppercase tracking-wide text-[#6c5ce7]">
+            Step {stepIndex + 1} of {steps.length}
+          </span>
+          <button
+            type="button"
+            onClick={finish}
+            className="text-[0.72rem] font-semibold text-[#6b7280] hover:text-[#1d2734]"
+          >
+            Skip tour
+          </button>
+        </div>
+
+        <div>
+          <div className="mb-1 text-[0.95rem] font-extrabold">{currentStep.title}</div>
+          <p className="text-[0.8rem] leading-snug text-[#4b5563]">{body}</p>
+        </div>
+
+        <div className="mt-1 flex justify-end">
+          <button
+            type="button"
+            onClick={handleNext}
+            className="rounded-[9px] bg-[#1e8b4a] px-4 py-2 text-[0.8rem] font-bold text-white hover:bg-[#197a40]"
+          >
+            {isLastStep ? 'Got it' : 'Next'}
+          </button>
+        </div>
+      </div>
+    </>,
+    document.body
+  );
+}

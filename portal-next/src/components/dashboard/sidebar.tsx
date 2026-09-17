@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { closeMobileNav, toggleMobileNav, useMobileNavOpen } from './mobile-nav-store';
+import { replayDashboardTour } from './dashboard-tour-store';
 
 export type SidebarProps = {
   shopName: string;
@@ -19,11 +20,11 @@ export type SidebarProps = {
 };
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: '/assets/dashboard.png' },
-  { href: '/my-shop', label: 'My Shop', icon: '/assets/shop.png' },
-  { href: '/products', label: 'Products', icon: '/assets/parcel.png' },
-  { href: '/reviews', label: 'Reviews', icon: '/assets/star.png', badge: true },
-  { href: '/payments-billing', label: 'Payments & Billing', icon: '/assets/wallet.png' },
+  { href: '/dashboard', label: 'Dashboard', icon: '/assets/dashboard.png', tourId: 'dashboard' },
+  { href: '/my-shop', label: 'My Shop', icon: '/assets/shop.png', tourId: 'my-shop' },
+  { href: '/products', label: 'Products', icon: '/assets/parcel.png', tourId: 'products' },
+  { href: '/reviews', label: 'Reviews', icon: '/assets/star.png', badge: true, tourId: 'reviews' },
+  { href: '/payments-billing', label: 'Payments & Billing', icon: '/assets/wallet.png', tourId: 'payments-billing' },
 ];
 
 // Mobile bottom tab bar shows the 4 most-used destinations plus a "More"
@@ -119,6 +120,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  id={`tour-${item.tourId}`}
                   className={`flex items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-[0.82rem] font-semibold ${
                     isActive ? 'bg-[#392065] text-white' : 'text-[#4B2E83] hover:bg-white/60 hover:text-[#392065]'
                   }`}
@@ -147,6 +149,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
             <button
               type="button"
               onClick={() => setSupportOpen((v) => !v)}
+              id="tour-support"
               className="flex w-full items-center gap-2.5 rounded-[9px] px-2.5 py-2.25 text-left text-[0.82rem] font-semibold text-[#4B2E83] hover:bg-white/60 hover:text-[#392065]"
             >
               <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-[7px] bg-white">
@@ -215,6 +218,19 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
                       </a>
                     </div>
                   </div>
+
+                  <div className="border-t border-[#e2e3e6] pt-3.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSupportOpen(false);
+                        replayDashboardTour();
+                      }}
+                      className="text-[0.78rem] font-bold text-[#6c5ce7] underline underline-offset-2 hover:text-[#5a4bcf]"
+                    >
+                      Take the tour again
+                    </button>
+                  </div>
                 </>
               );
 
@@ -259,8 +275,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
           return (
             <Link
               key={item.href}
-              href={item.href}
-              className={`relative flex flex-1 flex-col items-center gap-0.75 px-0.5 py-1 text-[0.62rem] font-bold ${
+              href={item.href}              id={`tour-${item.tourId}-mobile`}              className={`relative flex flex-1 flex-col items-center gap-0.75 px-0.5 py-1 text-[0.62rem] font-bold ${
                 isActive ? 'text-[#1d2734]' : 'text-[#6b7280]'
               }`}
             >
@@ -285,6 +300,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
         <button
           type="button"
           onClick={toggleMobileNav}
+          id="tour-more-mobile"
           className="relative flex flex-1 flex-col items-center gap-0.75 px-0.5 py-1 text-[0.62rem] font-bold text-[#6b7280]"
         >
           <span className="flex h-8.5 w-8.5 items-center justify-center rounded-[10px] text-base">☰</span>

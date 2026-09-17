@@ -37,6 +37,7 @@ export type ShopContext = {
   cancelAtPeriodEnd: boolean;
   paystackSubscriptionCode: string | null;
   paystackEmailToken: string | null;
+  hasSeenDashboardTour: boolean;
 };
 
 // Server-side port of sx-auth.js's resolveShopContext(). Owners and staff
@@ -60,7 +61,7 @@ export async function resolveShopContext(
   const { data: ownedShop } = await supabase
     .from('sx_shops')
     .select(
-      'id, shop_code, shop_name, category, market_platform, logo_url, subscription_status, billing_method, trial_ends_at, next_billing_at, cancel_at_period_end, paystack_subscription_code, paystack_email_token'
+      'id, shop_code, shop_name, category, market_platform, logo_url, subscription_status, billing_method, trial_ends_at, next_billing_at, cancel_at_period_end, paystack_subscription_code, paystack_email_token, has_seen_dashboard_tour'
     )
     .eq('owner_id', user.id)
     .maybeSingle();
@@ -82,13 +83,14 @@ export async function resolveShopContext(
       cancelAtPeriodEnd: !!ownedShop.cancel_at_period_end,
       paystackSubscriptionCode: (ownedShop.paystack_subscription_code as string) || null,
       paystackEmailToken: (ownedShop.paystack_email_token as string) || null,
+      hasSeenDashboardTour: !!ownedShop.has_seen_dashboard_tour,
     };
   }
 
   const { data: membership } = await supabase
     .from('sx_shop_members')
     .select(
-      'role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status, billing_method, trial_ends_at, next_billing_at, cancel_at_period_end, paystack_subscription_code, paystack_email_token)'
+      'role, sx_shops(id, shop_code, shop_name, category, market_platform, logo_url, subscription_status, billing_method, trial_ends_at, next_billing_at, cancel_at_period_end, paystack_subscription_code, paystack_email_token, has_seen_dashboard_tour)'
     )
     .eq('user_id', user.id)
     .maybeSingle();
@@ -112,6 +114,7 @@ export async function resolveShopContext(
       cancelAtPeriodEnd: !!joinedShop.cancel_at_period_end,
       paystackSubscriptionCode: (joinedShop.paystack_subscription_code as string) || null,
       paystackEmailToken: (joinedShop.paystack_email_token as string) || null,
+      hasSeenDashboardTour: !!joinedShop.has_seen_dashboard_tour,
     };
   }
 

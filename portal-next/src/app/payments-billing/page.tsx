@@ -73,14 +73,13 @@ export default async function PaymentsBillingPage() {
           <p className="mb-5.5 mt-1 text-[0.86rem] text-[#6b7280]">
             {hasAccess
               ? 'Manage your subscription and billing details.'
-              : 'Pay with card for a free trial that auto-renews, or pay with bank transfer for 30 days of access with no card required.'}
+              : 'Pay ₦1,000 with card (auto-renews monthly) or bank transfer for 30 days of access with no card required.'}
           </p>
 
           <PaymentsBillingClient
             isStaff={shop.isStaff}
             hasAccess={hasAccess}
             billingMethod={shop.billingMethod}
-            subscriptionStatus={shop.subscriptionStatus}
             accessUntil={shop.accessUntil}
             cancelAtPeriodEnd={shop.cancelAtPeriodEnd}
           />

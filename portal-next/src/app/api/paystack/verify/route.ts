@@ -1,32 +1,26 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { verifyTransaction, refundTransaction, createSubscription } from '@/lib/paystack';
+import { verifyTransaction, createSubscription } from '@/lib/paystack';
 
-const TRIAL_DAYS = 30;
-// TEMP: shortened trial for live testing of the card subscription flow
-// (so the real recurring charge fires quickly instead of waiting 30
-// days). Revert by deleting this constant and the override below, and
-// restoring `trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);`.
-const TRIAL_MINUTES_TEST_OVERRIDE = 5;
 const TRANSFER_ACCESS_DAYS = 30;
 
 // Confirms a checkout the client just completed via the Paystack popup.
 // Two payment purposes are handled very differently:
 //
-//   'card_verification' — a refundable ₦50 charge. Saves the reusable
-//     card authorization onto the shop, refunds the charge, and
-//     schedules the real ₦10,000/month subscription to start once the
-//     free trial ends (Paystack auto-debits from here on).
+//   'card_subscription' — the REAL subscription amount, charged
+//     immediately (no free trial). Saves the reusable card authorization
+//     onto the shop and schedules the recurring subscription to start
+//     billing again in 1 month — the charge just made covers the current
+//     month (Paystack auto-debits from month 2 onward).
 //
-//   'subscription_transfer' — the REAL ₦10,000, paid via bank transfer.
-//     There is no reusable authorization from a transfer, so nothing is
-//     scheduled/auto-debited and nothing is refunded (this is real
-//     revenue) — the shop simply gets 30 days of access and must pay
-//     again manually before it lapses. Note: transfers can also complete
-//     asynchronously after the customer has closed this tab, in which
-//     case the webhook (not this route) is what actually credits the
-//     payment — see /api/paystack/webhook.
+//   'subscription_transfer' — the REAL subscription amount, paid via bank
+//     transfer. There is no reusable authorization from a transfer, so
+//     nothing is scheduled/auto-debited — the shop simply gets 30 days of
+//     access and must pay again manually before it lapses. Note: transfers
+//     can also complete asynchronously after the customer has closed this
+//     tab, in which case the webhook (not this route) is what actually
+//     credits the payment — see /api/paystack/webhook.
 export async function GET(request: NextRequest) {
   const reference = request.nextUrl.searchParams.get('reference');
   if (!reference) {
@@ -101,9 +95,11 @@ export async function GET(request: NextRequest) {
       })
       .eq('id', payment.id);
 
-    const trialEndsAt = new Date();
-    trialEndsAt.setMinutes(trialEndsAt.getMinutes() + TRIAL_MINUTES_TEST_OVERRIDE);
-    // trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS); // ORIGINAL — restore this line and delete the override above after testing
+    // No free trial: the charge just made covers the period starting now
+    // through 1 month from now. The subscription is scheduled to make its
+    // first auto-debit at that point, covering month 2 onward.
+    const nextBillingAt = new Date();
+    nextBillingAt.setMonth(nextBillingAt.getMonth() + 1);
 
     let subscriptionCode: string | null = null;
     let emailToken: string | null = null;
@@ -111,40 +107,30 @@ export async function GET(request: NextRequest) {
       const sub = await createSubscription({
         customerCode: tx.customer.customer_code,
         authorizationCode: tx.authorization.authorization_code,
-        startDate: trialEndsAt,
+        startDate: nextBillingAt,
       });
       subscriptionCode = sub.data.subscription_code;
       emailToken = sub.data.email_token;
     } catch {
-      // Subscription scheduling failed — the card is still verified and
-      // saved, so this can be retried later without re-charging the
-      // customer. Trial dates are still recorded below.
+      // Subscription scheduling failed — the card is still verified, saved,
+      // and charged, so this can be retried later without re-charging the
+      // customer. Billing dates are still recorded below.
     }
 
     await admin
       .from('sx_shops')
       .update({
-        subscription_status: 'trialing',
+        subscription_status: 'active',
         billing_method: 'card',
         paystack_customer_code: tx.customer.customer_code,
         paystack_authorization_code: tx.authorization.authorization_code,
         paystack_subscription_code: subscriptionCode,
         paystack_email_token: emailToken,
         cancel_at_period_end: false,
-        trial_ends_at: trialEndsAt.toISOString(),
-        next_billing_at: trialEndsAt.toISOString(),
+        trial_ends_at: null,
+        next_billing_at: nextBillingAt.toISOString(),
       })
       .eq('id', payment.shop_id);
-
-    // Best-effort refund of the verification charge — it was never meant
-    // to be kept. Don't fail the whole flow if this errors; the customer
-    // already has full access via the trial.
-    try {
-      await refundTransaction(tx.id);
-      await admin.from('sx_payments').update({ status: 'refunded' }).eq('id', payment.id);
-    } catch {
-      // Refund can be retried manually from the Paystack dashboard.
-    }
 
     return NextResponse.json({ status: 'success' });
   } catch (err) {

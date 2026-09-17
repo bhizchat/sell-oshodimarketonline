@@ -50,11 +50,11 @@ const HEADLINE_BY_KIND: Record<TransferReminderKind, string> = {
 function bodyByKind(kind: TransferReminderKind, shopName: string, dueDateLabel: string): string {
   switch (kind) {
     case '7day':
-      return `Your bank-transfer subscription for <strong>${shopName}</strong> renews on <strong>${dueDateLabel}</strong>. To keep your shop dashboard, products and reviews accessible, please transfer &#8358;10,000 before then.`;
+      return `Your bank-transfer subscription for <strong>${shopName}</strong> renews on <strong>${dueDateLabel}</strong>. To keep your shop dashboard, products and reviews accessible, please transfer &#8358;1,000 before then.`;
     case '3day':
-      return `Your bank-transfer subscription for <strong>${shopName}</strong> renews in just 3 days, on <strong>${dueDateLabel}</strong>. Please make your &#8358;10,000 transfer soon to avoid losing access.`;
+      return `Your bank-transfer subscription for <strong>${shopName}</strong> renews in just 3 days, on <strong>${dueDateLabel}</strong>. Please make your &#8358;1,000 transfer soon to avoid losing access.`;
     case 'expiry':
-      return `Your subscription for <strong>${shopName}</strong> expired today. Your dashboard, product listings and reviews are paused until you renew with a &#8358;10,000 transfer.`;
+      return `Your subscription for <strong>${shopName}</strong> expired today. Your dashboard, product listings and reviews are paused until you renew with a &#8358;1,000 transfer.`;
   }
 }
 

@@ -5,16 +5,18 @@ import crypto from 'crypto';
 // must never reach the browser.
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
-// Small refundable charge used purely to capture a reusable card
-// authorization without billing the customer for real. Amount is in
-// kobo (₦50 = 5000 kobo), comfortably above Paystack's minimum.
+// Unused since the card flow no longer does a separate verification-only
+// charge (see /api/paystack/initialize) — kept only in case that model
+// is reintroduced later.
 export const CARD_VERIFICATION_AMOUNT_KOBO = 5000;
 
-// Real recurring plan amount, kept here only for reference/UI copy —
-// the source of truth for what Paystack actually charges is the Plan
-// itself (PAYSTACK_PLAN_CODE), created once via the Paystack Plan API.
-// TEMP: lowered to ₦1,000 for live testing of the transfer flow —
-// change back to 1_000_000 (₦10,000) before going live for real users.
+// Real subscription amount, charged up front for BOTH billing methods
+// (card and transfer) — no free trial. Kept here only for reference/UI
+// copy — the source of truth for what Paystack actually auto-debits on
+// renewal is the Plan itself (PAYSTACK_PLAN_CODE), created once via the
+// Paystack Plan API.
+// TEMP: lowered to ₦1,000 for live testing — change back to 1_000_000
+// (₦10,000) before going live for real users.
 export const SUBSCRIPTION_AMOUNT_KOBO = 100_000; // ₦1,000 (TESTING)
 
 async function paystackFetch<T>(path: string, init?: RequestInit): Promise<T> {

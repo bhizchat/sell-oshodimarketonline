@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { BillingMethod, SubscriptionStatus } from '@/lib/shop';
+import type { BillingMethod } from '@/lib/shop';
 
 // Client-side layer for Payments & Billing. Card entry itself happens
 // inside Paystack's own secure popup (never on this page/domain) — we
@@ -43,7 +43,6 @@ type PaymentsBillingClientProps = {
   isStaff: boolean;
   hasAccess: boolean;
   billingMethod: BillingMethod;
-  subscriptionStatus: SubscriptionStatus;
   accessUntil: string | null;
   cancelAtPeriodEnd: boolean;
 };
@@ -54,7 +53,6 @@ export default function PaymentsBillingClient({
   isStaff,
   hasAccess,
   billingMethod,
-  subscriptionStatus,
   accessUntil,
   cancelAtPeriodEnd,
 }: PaymentsBillingClientProps) {
@@ -250,11 +248,11 @@ export default function PaymentsBillingClient({
             ✓
           </div>
           <h2 className="mb-1.5 text-[1.15rem] font-extrabold text-[#1d2734]">
-            {successMethod === 'card' ? 'Your free trial has started!' : "Payment received — you're subscribed!"}
+            {successMethod === 'card' ? 'Payment received — your subscription is active!' : "Payment received — you're subscribed!"}
           </h2>
           <p className="mb-5 text-[0.85rem] text-[#6b7280]">
             {successMethod === 'card'
-              ? `You're all set with the Seller Plan free trial. We'll auto-charge ₦10,000/month starting ${dates?.firstBilling ?? 'next month'} unless you cancel.`
+              ? `You're all set with the Seller Plan. We'll auto-charge ₦1,000/month starting ${dates?.firstBilling ?? 'next month'} unless you cancel.`
               : `Your bank transfer was confirmed. You now have full access to your dashboard until ${dates?.firstBilling ?? 'your next renewal date'}.`}
           </p>
 
@@ -264,7 +262,7 @@ export default function PaymentsBillingClient({
               <span className="font-bold">Seller Plan</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b7280]">{successMethod === 'card' ? 'Trial Period' : 'Access Period'}</span>
+              <span className="text-[#6b7280]">Access Period</span>
               <span className="font-bold">{dates?.period ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
@@ -286,32 +284,24 @@ export default function PaymentsBillingClient({
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-11.5 w-11.5 items-center justify-center rounded-xl bg-[#e5e6e8] text-[1.3rem]">🏬</div>
             <div>
-              <div className="text-[1.05rem] font-extrabold">
-                {subscriptionStatus === 'trialing' ? 'Free Trial' : 'Seller Plan'}
-              </div>
+              <div className="text-[1.05rem] font-extrabold">Seller Plan</div>
               <div className="text-[0.78rem] text-[#6b7280]">
                 {billingMethod === 'transfer' ? 'Paid via Bank Transfer' : 'Paid via Card (auto-renews)'}
               </div>
             </div>
             <span className="ml-auto rounded-full bg-[#1e8b4a]/10 px-3 py-1 text-[0.74rem] font-bold text-[#1e8b4a]">
-              {subscriptionStatus === 'trialing' ? 'Trialing' : 'Active'}
+              Active
             </span>
           </div>
 
           <div className="mb-5 flex flex-col gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] p-3.5">
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b7280]">
-                {subscriptionStatus === 'trialing'
-                  ? 'Trial Ends'
-                  : billingMethod === 'transfer'
-                    ? 'Renew By'
-                    : 'Next Billing Date'}
-              </span>
+              <span className="text-[#6b7280]">{billingMethod === 'transfer' ? 'Renew By' : 'Next Billing Date'}</span>
               <span className="font-bold">{accessUntil ? formatDate(new Date(accessUntil)) : '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
               <span className="text-[#6b7280]">Amount</span>
-              <span className="font-bold">{billingMethod === 'transfer' ? '₦10,000 / 30 days' : '₦10,000 / month'}</span>
+              <span className="font-bold">{billingMethod === 'transfer' ? '₦1,000 / 30 days' : '₦1,000 / month'}</span>
             </div>
           </div>
 
@@ -336,7 +326,7 @@ export default function PaymentsBillingClient({
             <>
               <div className="mb-5 flex items-start gap-2 rounded-[10px] border border-[#1e8b4a]/25 bg-[#1e8b4a]/8 p-2.5 px-3 text-[0.76rem]">
                 <span className="shrink-0 text-[#1e8b4a]">🛡</span>
-                <span>Your card auto-renews ₦10,000/month — no action needed. Contact support to make changes.</span>
+                <span>Your card auto-renews ₦1,000/month — no action needed. Contact support to make changes.</span>
               </div>
 
               {cancelAtPeriodEnd ? (
@@ -393,7 +383,7 @@ export default function PaymentsBillingClient({
         <div className="rounded-[14px] border border-[#e2e3e6] bg-white p-5.5 px-6 max-[780px]:order-2">
           <div className="mb-3.5 flex h-11.5 w-11.5 items-center justify-center rounded-xl bg-[#e5e6e8] text-[1.3rem]">🏬</div>
           <div className="text-[0.76rem] text-[#6b7280]">Seller Plan</div>
-          <div className="mt-0.5 text-[1.15rem] font-extrabold">{method === 'card' ? 'Free Trial' : 'Seller Plan'}</div>
+          <div className="mt-0.5 text-[1.15rem] font-extrabold">Seller Plan</div>
           <div className="mb-4 mt-px text-[0.8rem] text-[#6b7280]">{method === 'card' ? 'for 1 month' : '30 days access'}</div>
 
           <ul className="mb-4.5 flex flex-col gap-2.5">
@@ -414,7 +404,7 @@ export default function PaymentsBillingClient({
 
           <div className="mb-4 flex flex-col gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] p-3 px-3.5">
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b7280]">{method === 'card' ? 'Trial Period' : 'Access Period'}</span>
+              <span className="text-[#6b7280]">Access Period</span>
               <span className="font-bold">{dates?.period ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
@@ -422,13 +412,13 @@ export default function PaymentsBillingClient({
               <span className="font-bold">{dates?.starts ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
-              <span className="text-[#6b7280]">{method === 'card' ? 'First Billing Date' : 'Renew By'}</span>
+              <span className="text-[#6b7280]">{method === 'card' ? 'Next Billing Date' : 'Renew By'}</span>
               <span className="font-bold">{dates?.firstBilling ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between text-[0.78rem]">
               <span className="text-[#6b7280]">Amount</span>
               <span className="font-bold">
-                {method === 'card' ? '₦10,000 / month' : '₦10,000 now'}
+                {method === 'card' ? '₦1,000 / month' : '₦1,000 now'}
               </span>
             </div>
           </div>
@@ -437,7 +427,8 @@ export default function PaymentsBillingClient({
             <div className="flex items-start gap-2 rounded-[10px] border border-[#1e8b4a]/25 bg-[#1e8b4a]/8 p-2.5 px-3 text-[0.76rem]">
               <span className="shrink-0 text-[#1e8b4a]">🛡</span>
               <span>
-                You can cancel anytime before <strong>{dates?.cancelBy ?? '—'}</strong> to avoid being charged.
+                You&apos;ll be charged ₦1,000 now. Cancel anytime before <strong>{dates?.cancelBy ?? '—'}</strong> to avoid
+                next month&apos;s charge.
               </span>
             </div>
           ) : (
@@ -481,7 +472,7 @@ export default function PaymentsBillingClient({
                     Pay with Card
                   </span>
                   <span className="mt-1 block text-[0.72rem] font-normal text-[#6b7280]">
-                    ₦50 verification, free trial, auto-renews monthly
+                    ₦1,000 charged now, auto-renews monthly
                   </span>
                 </button>
                 <button
@@ -494,7 +485,7 @@ export default function PaymentsBillingClient({
                 >
                   <span className="flex items-center gap-1.5">🏦 Pay with Transfer</span>
                   <span className="mt-1 block text-[0.72rem] font-normal text-[#6b7280]">
-                    ₦10,000 now, 30 days access, renew manually
+                    ₦1,000 now, 30 days access, renew manually
                   </span>
                 </button>
               </div>
@@ -508,8 +499,8 @@ export default function PaymentsBillingClient({
                   <div>
                     <div className="text-[0.84rem] font-bold">Pay securely with Paystack</div>
                     <div className="mt-0.75 text-[0.78rem] text-[#6b7280]">
-                      We&apos;ll verify your card with a refundable ₦50 charge, which is automatically refunded. Your free
-                      trial starts right away — you won&apos;t be charged the full ₦10,000 until it ends.
+                      You&apos;ll be charged ₦1,000 now for immediate access. Your card is securely saved and
+                      auto-charged ₦1,000/month going forward — cancel anytime to stop future charges.
                     </div>
                   </div>
                 </div>
@@ -517,7 +508,7 @@ export default function PaymentsBillingClient({
                 <div className="mb-4 flex items-start gap-2.5 rounded-[10px] border border-[#e2e3e6] bg-[#f8f9fa] px-4 py-3.5">
                   <span className="flex shrink-0 items-center text-[1.1rem]">🏦</span>
                   <div>
-                    <div className="text-[0.84rem] font-bold">Pay ₦10,000 via bank transfer</div>
+                    <div className="text-[0.84rem] font-bold">Pay ₦1,000 via bank transfer</div>
                     <div className="mt-0.75 text-[0.78rem] text-[#6b7280]">
                       Paystack will generate a one-time bank account for this payment — no card needed. Once it clears,
                       you get 30 days of full access. Since transfers can&apos;t be auto-charged, you&apos;ll need to come

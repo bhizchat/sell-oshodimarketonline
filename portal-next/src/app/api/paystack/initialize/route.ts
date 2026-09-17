@@ -2,20 +2,21 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { resolveShopContext } from '@/lib/shop';
-import { initializeTransaction, CARD_VERIFICATION_AMOUNT_KOBO, SUBSCRIPTION_AMOUNT_KOBO } from '@/lib/paystack';
+import { initializeTransaction, SUBSCRIPTION_AMOUNT_KOBO } from '@/lib/paystack';
 
 // Starts checkout: only the shop OWNER can initiate billing (staff share
 // the owner's subscription, they never pay separately).
 //
 // Two methods are supported (chosen by the client via body.method):
-//   'card'     (default) — a small refundable ₦50 verification charge,
-//               whose reusable card authorization is used to schedule a
-//               real recurring ₦10,000/month subscription (see /verify).
-//   'transfer' — the REAL ₦10,000 charged up front via Paystack's
-//               "Pay with Transfer" channel. There's no reusable
-//               authorization from a transfer, so this grants exactly
-//               30 days of access with no auto-renewal — the shop must
-//               come back and pay again next month.
+//   'card'     (default) — charges the real subscription amount now (no
+//               free trial), and saves the reusable card authorization so
+//               a real recurring subscription can be scheduled to start
+//               next month (see /verify).
+//   'transfer' — the REAL subscription amount charged up front via
+//               Paystack's "Pay with Transfer" channel. There's no
+//               reusable authorization from a transfer, so this grants
+//               exactly 30 days of access with no auto-renewal — the shop
+//               must come back and pay again next month.
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {
@@ -50,9 +51,9 @@ export async function POST(request: Request) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).origin;
 
   const isTransfer = method === 'transfer';
-  const reference = `sx_${isTransfer ? 'transfer' : 'verify'}_${shop.shopCode || shop.shopId}_${Date.now()}`;
-  const amountKobo = isTransfer ? SUBSCRIPTION_AMOUNT_KOBO : CARD_VERIFICATION_AMOUNT_KOBO;
-  const purpose = isTransfer ? 'subscription_transfer' : 'card_verification';
+  const reference = `sx_${isTransfer ? 'transfer' : 'card'}_${shop.shopCode || shop.shopId}_${Date.now()}`;
+  const amountKobo = SUBSCRIPTION_AMOUNT_KOBO;
+  const purpose = isTransfer ? 'subscription_transfer' : 'card_subscription';
 
   try {
     const result = await initializeTransaction({

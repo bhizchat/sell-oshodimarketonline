@@ -95,10 +95,12 @@ export default function OnboardingStep2Page() {
   if (checkingSession) return null;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#e4d7fc] px-4 py-8">
-      <div className="flex w-full max-w-245 overflow-hidden rounded-[22px] border border-[#d2c2f8] bg-gradient-to-b from-[#e4d7fc] to-[#d2c2f8] text-[#1d2734] shadow-[0_24px_60px_rgba(0,0,0,0.15)] max-md:flex-col">
-        {/* Left: brand / info column */}
-        <section className="flex flex-none basis-75 flex-col border-r border-[#c7b8f0] p-8 max-md:basis-auto max-md:border-r-0 max-md:border-b max-md:p-6">
+    <div className="flex min-h-screen items-center justify-center bg-[#e4d7fc] px-4 py-8 max-md:bg-white max-md:px-0 max-md:py-0">
+      <div className="flex w-full max-w-245 overflow-hidden rounded-[22px] border border-[#d2c2f8] bg-gradient-to-b from-[#e4d7fc] to-[#d2c2f8] text-[#1d2734] shadow-[0_24px_60px_rgba(0,0,0,0.15)] max-md:flex-col max-md:rounded-none max-md:border-0 max-md:shadow-none">
+        {/* Left: brand / info column — hidden on phone-sized screens so
+            mobile onboarding goes straight to the "Tell us about your
+            business" form below, without the purple intro panel above it. */}
+        <section className="hidden flex-none basis-75 flex-col border-r border-[#c7b8f0] p-8 md:flex">
           <div className="mb-7 flex flex-col gap-1">
             <Image src="/assets/oshodi-logo.png" alt="Oshodi Market Online logo" width={130} height={34} className="h-auto w-32.5 object-contain" />
             <div className="mt-px text-[0.58rem] font-bold uppercase tracking-[0.14em] text-[#4B2E83]">

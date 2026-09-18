@@ -58,8 +58,10 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex min-h-screen bg-[#e4d7fc] max-[900px]:flex-col">
-      {/* Left: brand / marketing panel */}
-      <section className="relative flex flex-[1.05] flex-col overflow-hidden bg-gradient-to-b from-[#e4d7fc] to-[#d2c2f8] p-12 text-[#1d2734] max-[900px]:min-h-65 max-[900px]:p-8 max-[480px]:p-6">
+      {/* Left: brand / marketing panel — hidden on phone-sized screens so
+          mobile onboarding goes straight to the "Welcome" step card below,
+          without the purple hero taking up space above the fold. */}
+      <section className="relative hidden flex-[1.05] flex-col overflow-hidden bg-gradient-to-b from-[#e4d7fc] to-[#d2c2f8] p-12 text-[#1d2734] md:flex max-[900px]:min-h-65 max-[900px]:p-8 max-[480px]:p-6">
         <div className="flex flex-col gap-1">
           <Image src="/assets/oshodi-logo.png" alt="Oshodi Market Online logo" width={150} height={40} className="h-auto w-[150px] object-contain" />
           <div className="mt-0.5 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-[#4B2E83]">

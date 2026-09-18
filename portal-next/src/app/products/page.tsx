@@ -4,6 +4,7 @@ import { resolveShopContext, loadProducts, loadProductStockStats, PRODUCTS_PAGE_
 import Sidebar from '@/components/dashboard/sidebar';
 import Topbar from '@/components/dashboard/topbar';
 import ProductsClient from '@/components/products/products-client';
+import OnboardingTour from '@/components/dashboard/onboarding-tour';
 
 // Server Component: ported 1:1 (layout/copy) from products.html — stats
 // row, search/filter bar, and the products table/empty-state. Products
@@ -70,6 +71,8 @@ export default async function ProductsPage() {
             pageSize={PRODUCTS_PAGE_SIZE}
           />
         </div>
+
+        {!shop.isStaff && <OnboardingTour autoShow={false} />}
 
         <div className="flex items-center justify-between border-t border-[#e2e3e6] px-8 py-4.5 text-[0.74rem] text-[#6b7280] max-md:mb-16 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-4.5">
           <div>© 2026 Oshodi Market Online. All rights reserved.</div>

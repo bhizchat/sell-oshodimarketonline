@@ -2,19 +2,55 @@
 
 import { useSyncExternalStore } from 'react';
 
-// Tiny cross-component pub/sub so "Take the tour again" (in Sidebar's
-// Support & Help popover) can re-trigger OnboardingTour, which renders as
-// a sibling elsewhere on the dashboard page — mirrors mobile-nav-store.ts.
-let replaySignal = 0;
+// Global onboarding-tour state, shared across every page it walks the
+// seller through (Dashboard, My Shop, Products, Reviews, Payments &
+// Billing). The tour needs to actually navigate between these pages so
+// the seller sees the real page behind each step (not just a highlighted
+// tab), and since Next.js unmounts a page's whole component tree on
+// route change, each page mounts its own <OnboardingTour> instance —
+// they all read/write this single shared store so the tour picks up
+// exactly where it left off instead of resetting on navigation. Also
+// powers Sidebar's "Take the tour again" link.
+type TourState = {
+  visible: boolean;
+  stepIndex: number;
+  // Whether the "View Shop" step exists. Only the Dashboard page knows
+  // this for sure (it depends on server-fetched data) — other pages leave
+  // it alone rather than overwriting a correct value with a guess.
+  hasViewShopButton: boolean;
+};
+
+let state: TourState = { visible: false, stepIndex: 0, hasViewShopButton: true };
 const listeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((listener) => listener());
 }
 
-export function replayDashboardTour() {
-  replaySignal += 1;
+function setState(patch: Partial<TourState>) {
+  state = { ...state, ...patch };
   emit();
+}
+
+export function startDashboardTour() {
+  setState({ visible: true, stepIndex: 0 });
+}
+
+// Kept as the exported name Sidebar's "Take the tour again" link already
+// calls.
+export const replayDashboardTour = startDashboardTour;
+
+export function hideDashboardTour() {
+  setState({ visible: false });
+}
+
+export function setTourStepIndex(index: number) {
+  setState({ stepIndex: index });
+}
+
+export function setTourHasViewShopButton(value: boolean) {
+  if (state.hasViewShopButton === value) return;
+  setState({ hasViewShopButton: value });
 }
 
 function subscribe(listener: () => void) {
@@ -23,15 +59,13 @@ function subscribe(listener: () => void) {
 }
 
 function getSnapshot() {
-  return replaySignal;
+  return state;
 }
 
-function getServerSnapshot() {
-  return 0;
+function getServerSnapshot(): TourState {
+  return { visible: false, stepIndex: 0, hasViewShopButton: true };
 }
 
-// Returns a number that changes every time replayDashboardTour() is
-// called — consumers should watch it with a useEffect to re-open the tour.
-export function useTourReplaySignal() {
+export function useTourState() {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

@@ -5,15 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { normalizeWhatsAppNumber } from '@/lib/phone';
-
-const CATEGORIES = [
-  { value: 'fashion', label: 'Clothing & Fashion' },
-  { value: 'electronics', label: 'Electronics & Gadgets' },
-  { value: 'fabrics', label: 'Fabrics & Textiles' },
-  { value: 'foodstuff', label: 'Foodstuffs & Oils' },
-  { value: 'accessories', label: 'Accessories' },
-  { value: 'other', label: 'Other' },
-];
+import { CATEGORY_OPTIONS as CATEGORIES } from '@/lib/categories';
 
 const MARKET_PLATFORMS = [{ value: 'oshodi-market-online', label: 'Oshodi Market Online' }];
 

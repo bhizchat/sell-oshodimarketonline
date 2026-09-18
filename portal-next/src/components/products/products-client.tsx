@@ -4,18 +4,7 @@ import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import type { Product, ProductStockStats } from '@/lib/shop';
 import { createClient } from '@/lib/supabase/client';
-
-// Same category list add-product.html/add-product-client.tsx uses, so the
-// edit modal's Category dropdown matches what's offered when a product is
-// first created.
-const CATEGORY_OPTIONS = [
-  { value: 'fashion', label: 'Clothing & Fashion' },
-  { value: 'electronics', label: 'Electronics & Gadgets' },
-  { value: 'fabrics', label: 'Fabrics & Textiles' },
-  { value: 'foodstuff', label: 'Foodstuffs & Oils' },
-  { value: 'accessories', label: 'Accessories' },
-  { value: 'other', label: 'Other' },
-];
+import { CATEGORY_OPTIONS } from '@/lib/categories';
 
 const editInputClass =
   'w-full rounded-lg border border-[#e2e3e6] bg-[#f8f9fa] px-3 py-2.25 text-[0.86rem] max-md:text-[16px] text-[#1d2734] outline-none focus:border-[#6c5ce7]';

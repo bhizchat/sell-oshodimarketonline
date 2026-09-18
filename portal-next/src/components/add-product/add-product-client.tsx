@@ -3,28 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-
-// Category -> Subcategory mapping, matching the exact subcategory names
-// used by Oshodi Market Online's own category-products-data.js, so any
-// subcategory picked here lines up with their storefront category pages
-// without needing translation on either side. Ported 1:1 from
-// add-product.html's SUBCATEGORY_MAP.
-const SUBCATEGORY_MAP: Record<string, string[]> = {
-  fabrics: ['Ankara Fabrics', 'Jonkoso', 'Big & Small Lana', '7 Star', 'Brushmouth', 'Checkers', 'White', 'Silk & Damask', 'Italian Pigal', 'Senator Materials'],
-  fashion: ["Women's Wear", "Men's Wear", 'Unisex Wear', 'Shoes & Bags', 'Traditional Wear', 'Kids Wear', 'Jewelry & Accessories', 'Sportswear'],
-  electronics: ['Mobile Phones', 'Laptop & Computers', 'Tablets', 'Accessories', 'Audio & Music', 'Cameras & Photography', 'Gaming', 'Smart Watches'],
-  foodstuff: ['Grains & Cereals', 'Oils & Spices', 'Snacks & Beverages', 'Fresh Produce', 'Frozen Foods', 'Provisions', 'Bakery Items', 'Drinks'],
-  accessories: ['Jewelry', 'Bags & Wallets', 'Belts', 'Sunglasses', 'Watches', 'Hair Accessories', 'Scarves', 'Perfumes'],
-};
-
-const CATEGORY_OPTIONS = [
-  { value: 'fashion', label: 'Clothing & Fashion' },
-  { value: 'electronics', label: 'Electronics & Gadgets' },
-  { value: 'fabrics', label: 'Fabrics & Textiles' },
-  { value: 'foodstuff', label: 'Foodstuffs & Oils' },
-  { value: 'accessories', label: 'Accessories' },
-  { value: 'other', label: 'Other' },
-];
+import { CATEGORY_OPTIONS, SUBCATEGORY_MAP } from '@/lib/categories';
 
 // iOS Safari auto-zooms the page when focusing any input/select/textarea
 // with font-size below 16px, and doesn't reliably zoom back out on blur —

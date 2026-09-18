@@ -65,8 +65,11 @@ const STEPS: Step[] = [
 // under separate `-mobile`-suffixed ids (the desktop sidebar's copies of
 // these links exist in the DOM too, but sit off-screen via
 // `-translate-x-full` until the drawer is opened, so they must never be
-// used as measurement targets on mobile).
+// used as measurement targets on mobile). Dashboard also points at its
+// own bottom-tab icon on mobile rather than spotlighting the stats grid,
+// which doesn't fit well inside a small mobile viewport.
 const MOBILE_ID_OVERRIDES: Record<string, string> = {
+  'tour-stats': 'tour-dashboard-mobile',
   'tour-my-shop': 'tour-my-shop-mobile',
   'tour-products': 'tour-products-mobile',
   'tour-reviews': 'tour-reviews-mobile',
@@ -200,6 +203,10 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
     setStepIndex((i) => i + 1);
   }
 
+  function handleBack() {
+    setStepIndex((i) => Math.max(0, i - 1));
+  }
+
   if (!mounted || !visible || !currentStep) return null;
 
   const isLastStep = stepIndex === steps.length - 1;
@@ -291,7 +298,18 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
           <p className="text-[0.8rem] leading-snug text-[#4b5563]">{currentStep.body}</p>
         </div>
 
-        <div className="mt-1 flex justify-end">
+        <div className="mt-1 flex items-center justify-between">
+          {stepIndex > 0 ? (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="rounded-[9px] border border-[#e2e3e6] px-4 py-2 text-[0.8rem] font-bold text-[#4b5563] hover:bg-[#f8f9fa]"
+            >
+              Back
+            </button>
+          ) : (
+            <span />
+          )}
           <button
             type="button"
             onClick={handleNext}

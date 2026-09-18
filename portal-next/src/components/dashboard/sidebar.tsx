@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { closeMobileNav, toggleMobileNav, useMobileNavOpen } from './mobile-nav-store';
 import { replayDashboardTour } from './dashboard-tour-store';
+import { useTourActiveTab } from './tour-active-tab-store';
 
 export type SidebarProps = {
   shopName: string;
@@ -43,6 +44,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
   const [supportOpen, setSupportOpen] = useState(false);
   const pathname = usePathname();
   const mobileOpen = useMobileNavOpen();
+  const tourActiveTab = useTourActiveTab();
 
   // Close the drawer whenever the route changes (i.e. after tapping a nav
   // link) and on Escape, matching the static site's wireMobileSidebar().
@@ -271,7 +273,7 @@ export default function Sidebar({ shopName, shopMeta, shopInitial, logoUrl, isSt
 
     <nav className="fixed inset-x-0 bottom-0 z-480 flex items-stretch justify-around border-t border-[#e2e3e6] bg-white px-1 pb-[calc(8px+env(safe-area-inset-bottom))] pt-2 md:hidden">
         {BOTTOM_NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = tourActiveTab ? item.tourId === tourActiveTab : pathname === item.href;
           return (
             <Link
               key={item.href}

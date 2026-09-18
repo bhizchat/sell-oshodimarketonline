@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTourReplaySignal } from './dashboard-tour-store';
 import { closeMobileNav, openMobileNav } from './mobile-nav-store';
+import { setTourActiveTab } from './tour-active-tab-store';
 
 export type OnboardingTourProps = {
   // Whether the tour should auto-show on mount (i.e. the shop owner has
@@ -81,6 +82,16 @@ const MOBILE_ID_OVERRIDES: Record<string, string> = {
 // below) and points at the real link/button inside it, rather than
 // vaguely gesturing at the "More" button.
 const MOBILE_DRAWER_STEP_IDS = new Set(['tour-payments-billing', 'tour-support']);
+
+// Maps a step to the Sidebar NAV_ITEMS `tourId` it corresponds to, so the
+// bottom tab bar's active/highlighted tab can follow the tour on mobile
+// instead of staying stuck on whatever the real current route is.
+const STEP_TO_NAV_TOUR_ID: Record<string, string> = {
+  'tour-stats': 'dashboard',
+  'tour-my-shop': 'my-shop',
+  'tour-products': 'products',
+  'tour-reviews': 'reviews',
+};
 
 function isMobileViewport() {
   return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
@@ -165,6 +176,21 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
   useEffect(() => {
     if (!visible) closeMobileNav();
   }, [visible]);
+
+  // Keep the bottom tab bar's active/highlighted tab in sync with the
+  // current step on mobile, so it's obvious which tab the bubble is
+  // describing even before the user has navigated there. Cleared whenever
+  // the tour isn't visible so normal pathname-based highlighting resumes.
+  useEffect(() => {
+    if (!visible || !currentStep || !isMobileViewport()) {
+      setTourActiveTab(null);
+      return;
+    }
+    setTourActiveTab(STEP_TO_NAV_TOUR_ID[currentStep.id] ?? null);
+  }, [visible, currentStep]);
+
+  // Never leave the override in place if this component unmounts mid-tour.
+  useEffect(() => () => setTourActiveTab(null), []);
 
   useEffect(() => {
     if (!visible) return;

@@ -2,14 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { usePathname, useRouter } from 'next/navigation';
-import {
-  hideDashboardTour,
-  setTourHasViewShopButton,
-  setTourStepIndex,
-  startDashboardTour,
-  useTourState,
-} from './dashboard-tour-store';
+import { useTourReplaySignal } from './dashboard-tour-store';
 import { closeMobileNav, openMobileNav } from './mobile-nav-store';
 import { setTourActiveTab } from './tour-active-tab-store';
 
@@ -19,10 +12,7 @@ export type OnboardingTourProps = {
   autoShow: boolean;
   // Whether the "View Shop" button exists on the dashboard right now —
   // if not (e.g. market platform not chosen yet), that step is skipped.
-  // Only the Dashboard page passes this (it's the only one with the data
-  // to know) — other pages omit it so they don't overwrite the real value
-  // already recorded in the shared tour store with a guess.
-  hasViewShopButton?: boolean;
+  hasViewShopButton: boolean;
 };
 
 type Step = {
@@ -93,20 +83,6 @@ const MOBILE_ID_OVERRIDES: Record<string, string> = {
 // vaguely gesturing at the "More" button.
 const MOBILE_DRAWER_STEP_IDS = new Set(['tour-payments-billing', 'tour-support']);
 
-// The tour navigates the seller to the real page behind each of these
-// steps (rather than just highlighting a tab) so they can see what the
-// bubble is describing. Payments & Billing/Support intentionally aren't
-// included — they have no bottom-tab icon on mobile and are instead
-// revealed via the off-canvas drawer (see MOBILE_DRAWER_STEP_IDS above),
-// which already works the same regardless of which page is behind it.
-const STEP_TO_ROUTE: Record<string, string> = {
-  'tour-stats': '/dashboard',
-  'tour-view-shop': '/dashboard',
-  'tour-my-shop': '/my-shop',
-  'tour-products': '/products',
-  'tour-reviews': '/reviews',
-};
-
 // Maps a step to the Sidebar NAV_ITEMS `tourId` it corresponds to, so the
 // bottom tab bar's active/highlighted tab can follow the tour on mobile
 // instead of staying stuck on whatever the real current route is.
@@ -124,45 +100,35 @@ function isMobileViewport() {
 type Rect = { top: number; left: number; width: number; height: number };
 
 export default function OnboardingTour({ autoShow, hasViewShopButton }: OnboardingTourProps) {
-  const { visible, stepIndex, hasViewShopButton: hasViewShopButtonInStore } = useTourState();
+  const replaySignal = useTourReplaySignal();
+  const [visible, setVisible] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
 
-  const steps = hasViewShopButtonInStore ? STEPS : STEPS.filter((s) => s.id !== 'tour-view-shop');
+  const steps = hasViewShopButton ? STEPS : STEPS.filter((s) => s.id !== 'tour-view-shop');
 
   useEffect(() => setMounted(true), []);
 
-  // Only the Dashboard page passes a real hasViewShopButton value — record
-  // it in the shared store so every page's step list agrees on whether
-  // the "Preview Your Shop" step exists.
+  // Auto-show on first mount if the owner hasn't seen it yet.
   useEffect(() => {
-    if (hasViewShopButton !== undefined) setTourHasViewShopButton(hasViewShopButton);
-  }, [hasViewShopButton]);
-
-  // Auto-show on first mount if the owner hasn't seen it yet. Guarded by
-  // `!visible` so this doesn't reset an already-in-progress tour back to
-  // step 0 whenever the tour's own navigation brings the seller back to
-  // the Dashboard page (which remounts this component).
-  useEffect(() => {
-    if (autoShow && !visible) startDashboardTour();
-    // Only ever check this once on mount.
+    if (autoShow) {
+      setStepIndex(0);
+      setVisible(true);
+    }
+    // Only ever check this once on mount — `visible` is what drives it after that.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const currentStep = steps[stepIndex];
-
-  // Navigate to the real page behind the current step (e.g. /my-shop for
-  // the "My Shop" step) so the seller sees what the bubble is describing,
-  // instead of just a highlighted tab. No-op if already on that page.
+  // Manual replay from Sidebar's "Take the tour again" link.
   useEffect(() => {
-    if (!visible || !currentStep) return;
-    const targetRoute = STEP_TO_ROUTE[currentStep.id];
-    if (targetRoute && targetRoute !== pathname) {
-      router.push(targetRoute);
+    if (replaySignal > 0) {
+      setStepIndex(0);
+      setVisible(true);
     }
-  }, [visible, currentStep, pathname, router]);
+  }, [replaySignal]);
+
+  const currentStep = steps[stepIndex];
 
   const recalcRect = useCallback(() => {
     if (!currentStep) return;
@@ -250,7 +216,7 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
   }, [visible, currentStep, rect, recalcRect]);
 
   const finish = useCallback(() => {
-    hideDashboardTour();
+    setVisible(false);
     closeMobileNav();
     fetch('/api/shop/tour-complete', { method: 'POST' }).catch(() => {});
   }, []);
@@ -260,11 +226,11 @@ export default function OnboardingTour({ autoShow, hasViewShopButton }: Onboardi
       finish();
       return;
     }
-    setTourStepIndex(stepIndex + 1);
+    setStepIndex((i) => i + 1);
   }
 
   function handleBack() {
-    setTourStepIndex(Math.max(0, stepIndex - 1));
+    setStepIndex((i) => Math.max(0, i - 1));
   }
 
   if (!mounted || !visible || !currentStep) return null;

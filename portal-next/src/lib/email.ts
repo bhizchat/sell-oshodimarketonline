@@ -82,3 +82,26 @@ export function buildTransferReminderEmail(
 
   return { subject: SUBJECT_BY_KIND[kind], html };
 }
+
+// Sent once per failed-charge billing cycle to "Pay with Card" shops
+// whose auto-debit failed (Paystack's `invoice.payment_failed` webhook
+// event) — mirrors buildTransferReminderEmail's look, but for the
+// opposite payment method. Deduping (so Paystack's automatic retries of
+// the same failed invoice don't send this multiple times) is handled by
+// the caller via sx_billing_reminders, same table the transfer reminders
+// use, with reminder_type = 'card_failed'.
+export function buildCardPaymentFailedEmail(shopName: string, payUrl: string): { subject: string; html: string } {
+  const html = `
+    <div style="font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 0.65rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #4B2E83;">Oshodi Market Online</span>
+      </div>
+      <h1 style="font-size: 1.2rem; font-weight: 800; color: #1d2734; margin: 0 0 12px;">We couldn't renew your subscription</h1>
+      <p style="font-size: 0.9rem; line-height: 1.6; color: #4b4d57; margin: 0 0 24px;">Your card payment for <strong>${shopName}</strong> didn't go through, so your &#8358;10,000 monthly renewal failed. Your dashboard, product listings and reviews are paused until you pay again.</p>
+      <a href="${payUrl}" style="display: inline-block; padding: 12px 20px; border-radius: 10px; background: #6c5ce7; color: #ffffff; font-weight: 700; font-size: 0.85rem; text-decoration: none;">Retry Payment</a>
+      <p style="font-size: 0.75rem; color: #a9aaad; margin-top: 32px;">If you've already retried and it succeeded, you can ignore this email — access updates automatically once we confirm payment.</p>
+    </div>
+  `;
+
+  return { subject: 'Action needed: your subscription payment failed', html };
+}

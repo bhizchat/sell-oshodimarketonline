@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { verifyWebhookSignature } from '@/lib/paystack';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { sendEmail, buildCardPaymentFailedEmail } from '@/lib/email';
 
 // Paystack webhook — the source of truth for recurring subscription
 // billing (the client-side /verify call only ever handles the initial
@@ -101,10 +102,50 @@ export async function POST(request: NextRequest) {
     case 'invoice.payment_failed': {
       const customerCode = event.data.customer?.customer_code;
       if (customerCode) {
-        await supabase
+        const { data: shop } = await supabase
           .from('sx_shops')
           .update({ subscription_status: 'past_due' })
-          .eq('paystack_customer_code', customerCode);
+          .eq('paystack_customer_code', customerCode)
+          .select('id, owner_id, shop_name, next_billing_at, billing_method')
+          .maybeSingle();
+
+        // Only "Pay with Card" shops reach here — bank transfer never
+        // uses Paystack's recurring-subscription/invoice machinery, so
+        // this event can't fire for them. Paystack retries a failed
+        // charge automatically for a few days before finally giving up
+        // (eventually firing subscription.disable), which would re-fire
+        // this same event several times for one missed renewal — dedupe
+        // via sx_billing_reminders (same table the transfer-reminder cron
+        // uses) keyed on next_billing_at so only the first attempt for
+        // this billing cycle actually emails the owner.
+        if (shop && shop.billing_method === 'card' && shop.next_billing_at) {
+          const { data: existing } = await supabase
+            .from('sx_billing_reminders')
+            .select('id')
+            .eq('shop_id', shop.id)
+            .eq('reminder_type', 'card_failed')
+            .eq('billing_cycle_at', shop.next_billing_at)
+            .maybeSingle();
+
+          if (!existing) {
+            const { data: userData } = await supabase.auth.admin.getUserById(shop.owner_id as string);
+            const email = userData?.user?.email;
+            if (email) {
+              const payUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/payments-billing`;
+              const { subject, html } = buildCardPaymentFailedEmail(shop.shop_name as string, payUrl);
+              try {
+                await sendEmail({ to: email, subject, html });
+                await supabase.from('sx_billing_reminders').insert({
+                  shop_id: shop.id,
+                  reminder_type: 'card_failed',
+                  billing_cycle_at: shop.next_billing_at,
+                });
+              } catch (err) {
+                console.error(`Failed to send card_failed reminder for shop ${shop.id}:`, err);
+              }
+            }
+          }
+        }
       }
       break;
     }

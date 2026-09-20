@@ -5,19 +5,26 @@ import crypto from 'crypto';
 // must never reach the browser.
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
-// Unused since the card flow no longer does a separate verification-only
-// charge (see /api/paystack/initialize) — kept only in case that model
-// is reintroduced later.
-export const CARD_VERIFICATION_AMOUNT_KOBO = 5000;
+// One-time refundable charge used to capture a reusable card
+// authorization when a shop starts its free trial via card. Refunded
+// immediately after the trial subscription is scheduled (see
+// /api/paystack/verify) — it exists purely to verify the card works and
+// save its authorization code, never kept as real revenue.
+export const CARD_VERIFICATION_AMOUNT_KOBO = 5000; // ₦50
 
-// Real subscription amount, charged up front for BOTH billing methods
-// (card and transfer) — no free trial. Kept here only for reference/UI
-// copy — the source of truth for what Paystack actually auto-debits on
-// renewal is the Plan itself (PAYSTACK_PLAN_CODE), created once via the
-// Paystack Plan API.
-// TEMP: lowered to ₦1,000 for live testing — change back to 1_000_000
-// (₦10,000) before going live for real users.
-export const SUBSCRIPTION_AMOUNT_KOBO = 100_000; // ₦1,000 (TESTING)
+// Real subscription amount — this is what both billing methods actually
+// cost once a shop's free trial ends (or immediately, for a shop that has
+// already used its trial and is paying again). Kept here only for
+// reference/UI copy — the source of truth for what Paystack actually
+// auto-debits on renewal is the Plan itself (PAYSTACK_PLAN_CODE), created
+// once via the Paystack Plan API.
+export const SUBSCRIPTION_AMOUNT_KOBO = 1_000_000; // ₦10,000
+
+// Length of the one-time free trial offered to a shop the first time it
+// sets up billing (card or transfer) — see /api/paystack/initialize and
+// /verify. A shop is only ever trial-eligible once: after its first trial
+// or payment, `sx_shops.subscription_status` never returns to 'none'.
+export const TRIAL_DAYS = 30;
 
 async function paystackFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;

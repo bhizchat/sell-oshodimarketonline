@@ -1,18 +1,26 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { verifyTransaction, createSubscription } from '@/lib/paystack';
+import { verifyTransaction, createSubscription, refundTransaction, TRIAL_DAYS } from '@/lib/paystack';
 
 const TRANSFER_ACCESS_DAYS = 30;
 
 // Confirms a checkout the client just completed via the Paystack popup.
-// Two payment purposes are handled very differently:
+// Three payment purposes are handled very differently:
+//
+//   'card_verification' — a small refundable charge used only to capture
+//     a reusable card authorization for a shop using its free trial. On
+//     success, the charge is immediately refunded, a 30-day free trial is
+//     granted, and a real subscription is scheduled to start auto-billing
+//     ₦10,000/month right when the trial ends.
 //
 //   'card_subscription' — the REAL subscription amount, charged
-//     immediately (no free trial). Saves the reusable card authorization
-//     onto the shop and schedules the recurring subscription to start
-//     billing again in 1 month — the charge just made covers the current
-//     month (Paystack auto-debits from month 2 onward).
+//     immediately (no free trial — this shop has already used its trial,
+//     or is resuming after a lapsed one). Saves the reusable card
+//     authorization onto the shop and schedules the recurring
+//     subscription to start billing again in 1 month — the charge just
+//     made covers the current month (Paystack auto-debits from month 2
+//     onward).
 //
 //   'subscription_transfer' — the REAL subscription amount, paid via bank
 //     transfer. There is no reusable authorization from a transfer, so
@@ -21,6 +29,10 @@ const TRANSFER_ACCESS_DAYS = 30;
 //     can also complete asynchronously after the customer has closed this
 //     tab, in which case the webhook (not this route) is what actually
 //     credits the payment — see /api/paystack/webhook.
+//
+// (A free trial via transfer never reaches this route at all — it's
+// granted directly by /api/paystack/initialize since there's nothing to
+// verify for a ₦0 charge.)
 export async function GET(request: NextRequest) {
   const reference = request.nextUrl.searchParams.get('reference');
   if (!reference) {
@@ -85,6 +97,63 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ status: 'success' });
     }
 
+    if (payment.purpose === 'card_verification') {
+      let refundStatus: 'refunded' | 'success' = 'success';
+      try {
+        await refundTransaction(tx.id);
+        refundStatus = 'refunded';
+      } catch {
+        // Refund failed/couldn't be confirmed — the trial still starts (the
+        // customer shouldn't be blocked by this), the ₦50 can be refunded
+        // manually later from the Paystack dashboard if needed.
+      }
+
+      await admin
+        .from('sx_payments')
+        .update({
+          status: refundStatus,
+          paid_at: new Date().toISOString(),
+          paystack_transaction_id: String(tx.id),
+          authorization_code: tx.authorization.authorization_code,
+        })
+        .eq('id', payment.id);
+
+      const trialEndsAt = new Date();
+      trialEndsAt.setDate(trialEndsAt.getDate() + TRIAL_DAYS);
+
+      let subscriptionCode: string | null = null;
+      let emailToken: string | null = null;
+      try {
+        const sub = await createSubscription({
+          customerCode: tx.customer.customer_code,
+          authorizationCode: tx.authorization.authorization_code,
+          startDate: trialEndsAt,
+        });
+        subscriptionCode = sub.data.subscription_code;
+        emailToken = sub.data.email_token;
+      } catch {
+        // Subscription scheduling failed — the trial still starts; this can
+        // be retried/reconciled manually before the trial ends.
+      }
+
+      await admin
+        .from('sx_shops')
+        .update({
+          subscription_status: 'trialing',
+          billing_method: 'card',
+          paystack_customer_code: tx.customer.customer_code,
+          paystack_authorization_code: tx.authorization.authorization_code,
+          paystack_subscription_code: subscriptionCode,
+          paystack_email_token: emailToken,
+          cancel_at_period_end: false,
+          trial_ends_at: trialEndsAt.toISOString(),
+          next_billing_at: trialEndsAt.toISOString(),
+        })
+        .eq('id', payment.shop_id);
+
+      return NextResponse.json({ status: 'success' });
+    }
+
     await admin
       .from('sx_payments')
       .update({
@@ -95,9 +164,9 @@ export async function GET(request: NextRequest) {
       })
       .eq('id', payment.id);
 
-    // No free trial: the charge just made covers the period starting now
-    // through 1 month from now. The subscription is scheduled to make its
-    // first auto-debit at that point, covering month 2 onward.
+    // Real (non-trial) card charge: the charge just made covers the period
+    // starting now through 1 month from now. The subscription is scheduled
+    // to make its first auto-debit at that point, covering month 2 onward.
     const nextBillingAt = new Date();
     nextBillingAt.setMonth(nextBillingAt.getMonth() + 1);
 

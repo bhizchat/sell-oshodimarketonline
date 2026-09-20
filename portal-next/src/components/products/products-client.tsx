@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import type { Product, ProductStockStats } from '@/lib/shop';
 import { createClient } from '@/lib/supabase/client';
@@ -30,7 +30,7 @@ type EditForm = {
 export default function ProductsClient({
   shopId,
   initialProducts,
-  totalCount,
+  totalCount: initialTotalCount,
   stockStats,
   pageSize,
 }: {
@@ -41,6 +41,7 @@ export default function ProductsClient({
   pageSize: number;
 }) {
   const [products, setProducts] = useState(initialProducts);
+  const [totalCount, setTotalCount] = useState(initialTotalCount);
   const [loadedCount, setLoadedCount] = useState(initialProducts.length);
   const [loadingMore, setLoadingMore] = useState(false);
   const [search, setSearch] = useState('');
@@ -52,6 +53,24 @@ export default function ProductsClient({
   const [editForm, setEditForm] = useState<EditForm | null>(null);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
+
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  // Close the row action menu on any click outside it.
+  useEffect(() => {
+    if (!menuOpenId) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpenId(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpenId]);
 
   const total = stockStats.total;
   const inStock = stockStats.inStock;
@@ -116,6 +135,7 @@ export default function ProductsClient({
   const editingProduct = editingId ? products.find((p) => p.id === editingId) || null : null;
 
   function openEditModal(p: Product) {
+    setMenuOpenId(null);
     setEditingId(p.id);
     setEditForm({
       productName: p.productName,
@@ -186,6 +206,39 @@ export default function ProductsClient({
       openEditModal(previousProducts.find((p) => p.id === targetId)!);
       setEditError(error.message || 'Could not save changes. Please try again.');
     }
+  }
+
+  function openDeleteModal(p: Product) {
+    setMenuOpenId(null);
+    setDeleteTarget(p);
+    setDeleteError('');
+  }
+
+  function closeDeleteModal() {
+    if (deleting) return;
+    setDeleteTarget(null);
+    setDeleteError('');
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const targetId = deleteTarget.id;
+    setDeleting(true);
+    setDeleteError('');
+
+    const supabase = createClient();
+    const { error } = await supabase.from('sx_products').delete().eq('id', targetId);
+    setDeleting(false);
+
+    if (error) {
+      setDeleteError(error.message || 'Could not delete this product. Please try again.');
+      return;
+    }
+
+    setProducts((prev) => prev.filter((p) => p.id !== targetId));
+    setLoadedCount((prev) => Math.max(0, prev - 1));
+    setTotalCount((prev) => Math.max(0, prev - 1));
+    setDeleteTarget(null);
   }
 
   return (
@@ -312,14 +365,35 @@ export default function ProductsClient({
                       </span>
                     </td>
                     <td className={`px-5 py-4 text-[0.84rem] ${i < filtered.length - 1 ? 'border-b border-[#e2e3e6]' : ''}`}>
-                      <button
-                        type="button"
-                        title="Edit product"
-                        onClick={() => openEditModal(p)}
-                        className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[#e2e3e6] bg-[#e5e6e8] text-[0.86rem] text-[#6b7280] hover:border-[#6c5ce7] hover:bg-white hover:text-[#1d2734]"
-                      >
-                        ✎
-                      </button>
+                      <div className="relative inline-block" ref={menuOpenId === p.id ? menuRef : undefined}>
+                        <button
+                          type="button"
+                          title="Product actions"
+                          aria-label="Product actions"
+                          onClick={() => setMenuOpenId((v) => (v === p.id ? null : p.id))}
+                          className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-[#e2e3e6] bg-[#e5e6e8] text-[0.86rem] text-[#6b7280] hover:border-[#6c5ce7] hover:bg-white hover:text-[#1d2734]"
+                        >
+                          &#8942;
+                        </button>
+                        {menuOpenId === p.id && (
+                          <div className="absolute right-0 top-[calc(100%+6px)] z-20 flex min-w-[140px] flex-col gap-0.5 rounded-[10px] border border-[#e2e3e6] bg-white p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.18)]">
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(p)}
+                              className="w-full rounded-lg px-2.5 py-2 text-left text-[0.8rem] font-semibold text-[#1d2734] hover:bg-[#f8f9fa]"
+                            >
+                              ✎ Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openDeleteModal(p)}
+                              className="w-full rounded-lg px-2.5 py-2 text-left text-[0.8rem] font-semibold text-[#c0392b] hover:bg-[#e04b4b]/[0.1]"
+                            >
+                              🗑 Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -452,6 +526,45 @@ export default function ProductsClient({
                 className="rounded-[10px] border-none bg-white px-4 py-2.5 text-[0.82rem] font-extrabold text-[#1d2734] shadow-[0_0_0_1px_#e2e3e6] hover:bg-[#e5e6e8] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/55 p-5"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeDeleteModal();
+          }}
+        >
+          <div className="w-full max-w-105 rounded-2xl border border-[#e2e3e6] bg-white p-6">
+            <div className="text-[1.05rem] font-extrabold text-[#1d2734]">Delete &ldquo;{deleteTarget.productName}&rdquo;?</div>
+            <p className="mt-2.5 text-[0.86rem] leading-relaxed text-[#6b7280]">
+              This permanently removes this product from your shop. This cannot be undone.
+            </p>
+            {deleteError && (
+              <div className="mt-3 rounded-lg border border-[#e04b4b]/30 bg-[#e04b4b]/[0.08] px-3 py-2 text-[0.8rem] font-semibold text-[#c0392b]">
+                {deleteError}
+              </div>
+            )}
+            <div className="mt-5 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                disabled={deleting}
+                className="rounded-[10px] border border-[#e2e3e6] bg-transparent px-4 py-2.5 text-[0.82rem] font-bold text-[#6b7280] hover:bg-[#e5e6e8] hover:text-[#1d2734] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="rounded-[10px] border-none bg-[#e04b4b] px-4 py-2.5 text-[0.82rem] font-extrabold text-white hover:bg-[#c0392b] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deleting ? 'Deleting…' : 'Delete Product'}
               </button>
             </div>
           </div>

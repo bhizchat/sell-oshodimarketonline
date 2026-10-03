@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import LandingPage from '@/components/landing/landing-page';
 
-// Root route has no landing page — go straight to auth (or onboarding/dashboard
-// if already signed in).
+// Signed-in visitors go straight to onboarding/dashboard. Signed-out visitors
+// see the OMO marketing landing page instead of being redirected to /login.
 export default async function Home() {
   const supabase = await createClient();
   const {
@@ -17,5 +18,5 @@ export default async function Home() {
     redirect('/dashboard');
   }
 
-  redirect('/login');
+  return <LandingPage />;
 }

@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import HeroVisual from './hero-visual';
 
 const BENEFITS = [
   {
@@ -29,7 +28,8 @@ const BENEFITS = [
     desc: 'You do not need to change how you operate. OMO simply gives you another way to reach customers.',
   },
   {
-    icon: '/assets/lock.png',
+    icon: '/assets/icon-trust-verified.png',
+    bare: true,
     title: 'Build customer trust',
     desc: 'Create a business profile connected to your real business and physical location.',
   },
@@ -100,7 +100,14 @@ export default function LandingPage() {
         </div>
 
         <div className="flex-1">
-          <HeroVisual />
+          <Image
+            src="/assets/landing-hero.jpg"
+            alt="Smiling Oshodi market vendor at her stall holding a phone"
+            width={1448}
+            height={1086}
+            priority
+            className="h-auto w-full rounded-[14px] shadow-[0_30px_60px_-20px_rgba(10,10,10,0.35)]"
+          />
         </div>
       </section>
 
@@ -113,12 +120,24 @@ export default function LandingPage() {
             </p>
           </div>
 
+          <Image
+            src="/assets/landing-why-join.jpg"
+            alt="A busy, colorful Oshodi market street"
+            width={2172}
+            height={724}
+            className="mb-10 h-auto w-full rounded-2xl max-md:mb-7"
+          />
+
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {BENEFITS.map((b) => (
               <div key={b.title} className="rounded-2xl border border-[#dcdde0] bg-white p-6">
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-[#d2c2f8] bg-linear-to-br from-[#e4d7fc] to-[#c7b8f0]">
-                  <Image src={b.icon} alt="" width={22} height={22} className="h-5.5 w-5.5 object-contain" />
-                </div>
+                {b.bare ? (
+                  <Image src={b.icon} alt="" width={44} height={44} className="mb-4 h-11 w-11 object-contain" />
+                ) : (
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-[#d2c2f8] bg-linear-to-br from-[#e4d7fc] to-[#c7b8f0]">
+                    <Image src={b.icon} alt="" width={22} height={22} className="h-5.5 w-5.5 object-contain" />
+                  </div>
+                )}
                 <h3 className="mb-1.5 text-[1.02rem] font-bold">{b.title}</h3>
                 <p className="text-[0.85rem] leading-relaxed text-[#6b7280]">{b.desc}</p>
               </div>
@@ -153,7 +172,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-[#392065] px-8 py-18 text-center max-md:px-4.5 max-md:py-12">
+      <section className="relative overflow-hidden bg-[#392065] px-8 py-18 text-center max-md:px-4.5 max-md:py-12">
+        <Image src="/assets/landing-cta-bg.jpg" alt="" fill sizes="100vw" className="object-cover opacity-60" />
+        <div className="relative">
         <p className="mb-1.5 text-[0.95rem] font-semibold text-[#c7b8f0]">Your business is already in Oshodi.</p>
         <h2 className="mb-7 text-[2rem] font-black tracking-tight text-white max-md:text-[1.5rem]">Now let more people find it.</h2>
         <Link
@@ -163,6 +184,7 @@ export default function LandingPage() {
           Join Oshodi Market Online
         </Link>
         <p className="mt-5 text-[0.82rem] text-[#c7b8f0]">Reach more customers. Grow your business.</p>
+        </div>
       </section>
 
       <footer className="bg-[#1d1033] py-10 text-center text-[0.8rem] text-[#c7b8f0]">

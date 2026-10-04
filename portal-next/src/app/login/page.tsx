@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -37,6 +37,25 @@ function LoginForm() {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [step, setStep] = useState<'password' | 'otp'>('password');
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [resendIn, setResendIn] = useState(0);
+  const [info, setInfo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
+
+  function backToPassword() {
+    setStep('password');
+    setCode('');
+    setError(null);
+    setInfo(null);
+    setPassword('');
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,7 +72,55 @@ function LoginForm() {
       setError(result.error || 'Unable to sign in. Please check your details.');
       return;
     }
+    if (result.otpRequired) {
+      setMaskedEmail(result.maskedEmail || email);
+      setStep('otp');
+      setResendIn(45);
+      return;
+    }
     window.location.href = next;
+  }
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setInfo(null);
+    setSubmitting(true);
+    const response = await fetch('/api/auth/otp/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      setSubmitting(false);
+      setError(result.error || 'Unable to verify code.');
+      if (result.restart) backToPasswordKeepError();
+      else setCode('');
+      return;
+    }
+    window.location.href = next;
+  }
+
+  function backToPasswordKeepError() {
+    setStep('password');
+    setCode('');
+    setPassword('');
+  }
+
+  async function handleResend() {
+    setError(null);
+    setInfo(null);
+    const response = await fetch('/api/auth/otp/resend', { method: 'POST' });
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.error || 'Unable to resend code.');
+      if (result.restart) backToPasswordKeepError();
+      else if (result.retryAfterSeconds) setResendIn(result.retryAfterSeconds);
+      return;
+    }
+    setInfo('A new code has been sent.');
+    setResendIn(result.cooldownSeconds || 45);
   }
 
   async function handleGoogleSignIn() {
@@ -82,9 +149,66 @@ function LoginForm() {
             <h2 className="text-[1.25rem] font-extrabold text-[#1d2734]">
               Sell on Oshodi<span className="text-[#6c5ce7]"> Market Online</span>
             </h2>
-            <p className="mt-1 text-[0.82rem] text-[#6b7280]">Sign in to continue to your account</p>
+            <p className="mt-1 text-[0.82rem] text-[#6b7280]">
+              {step === 'otp' ? 'Enter the code we emailed you' : 'Sign in to continue to your account'}
+            </p>
           </div>
 
+          {step === 'otp' ? (
+            <form onSubmit={handleVerify}>
+              {error && (
+                <div className="mb-3.5 rounded-lg border border-[#f3b9b9] bg-[#fdecec] px-3 py-2.5 text-[0.78rem] font-semibold text-[#9c2b2b]">
+                  {error}
+                </div>
+              )}
+              {info && (
+                <div className="mb-3.5 rounded-lg border border-[#b7e4c7] bg-[#ecf9f0] px-3 py-2.5 text-[0.78rem] font-semibold text-[#1e6b3a]">
+                  {info}
+                </div>
+              )}
+
+              <p className="mb-4 text-center text-[0.82rem] text-[#6b7280]">
+                We sent a 6-digit code to <strong className="text-[#1d2734]">{maskedEmail}</strong>. It expires in 10 minutes.
+              </p>
+
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                autoFocus
+                maxLength={6}
+                required
+                placeholder="000000"
+                aria-label="6-digit sign-in code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                className="mb-4 w-full rounded-[10px] border border-[#dcdde0] bg-[#fbfbfc] py-3.5 text-center text-[1.5rem] font-extrabold tracking-[0.4em] text-[#1d2734] outline-none transition-colors placeholder:text-[#c9cacd] focus:border-[#6c5ce7] focus:bg-white"
+              />
+
+              <button
+                type="submit"
+                disabled={submitting || code.length !== 6}
+                className="w-full rounded-[10px] bg-gradient-to-b from-[#4B2E83] to-[#392065] py-3.5 text-[0.9rem] font-extrabold tracking-wide text-white hover:from-[#5a3799] hover:to-[#2d1850] disabled:opacity-60"
+              >
+                {submitting ? 'Please wait…' : 'Verify & Sign In'}
+              </button>
+
+              <div className="mt-4 flex items-center justify-between text-[0.8rem]">
+                <button type="button" onClick={backToPassword} className="font-bold text-[#6b7280] hover:text-[#1d2734]">
+                  ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendIn > 0}
+                  className="font-bold text-[#4B2E83] disabled:text-[#a9aaad]"
+                >
+                  {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
+                </button>
+              </div>
+            </form>
+          ) : (
+          <>
           <form onSubmit={handleSubmit}>
             {error && (
               <div className="mb-3.5 rounded-lg border border-[#f3b9b9] bg-[#fdecec] px-3 py-2.5 text-[0.78rem] font-semibold text-[#9c2b2b]">
@@ -173,6 +297,8 @@ function LoginForm() {
               Sign up
             </Link>
           </p>
+          </>
+          )}
         </div>
       </section>
     </div>

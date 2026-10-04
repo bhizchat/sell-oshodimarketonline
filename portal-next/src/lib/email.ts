@@ -105,3 +105,18 @@ export function buildCardPaymentFailedEmail(shopName: string, payUrl: string): {
 
   return { subject: 'Action needed: your subscription payment failed', html };
 }
+
+export function buildLoginOtpEmail(code: string): { subject: string; html: string } {
+  const html = `
+    <div style="font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 0.65rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #4B2E83;">Oshodi Market Online</span>
+      </div>
+      <h1 style="font-size: 1.2rem; font-weight: 800; color: #1d2734; margin: 0 0 12px;">Your sign-in code</h1>
+      <p style="font-size: 0.9rem; line-height: 1.6; color: #4b4d57; margin: 0 0 20px;">Enter this code to finish signing in. It expires in 10 minutes.</p>
+      <div style="text-align: center; font-size: 2rem; font-weight: 800; letter-spacing: 0.4em; padding: 16px 0 16px 0.4em; background: #f4f0fd; border-radius: 10px; color: #392065;">${code}</div>
+      <p style="font-size: 0.75rem; color: #a9aaad; margin-top: 28px;">If you didn't try to sign in, someone may know your password — please change it. Never share this code with anyone.</p>
+    </div>
+  `;
+  return { subject: `${code} is your Oshodi Market Online sign-in code`, html };
+}

@@ -42,6 +42,23 @@ export const resetPasswordEmailLimiter = redis
   ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, '15 m'), prefix: 'ratelimit:reset:email' })
   : null;
 
+// Login OTP emails: 10 sends per IP per hour, 6 per email per hour (covers the
+// initial send after the password step plus resends).
+export const otpSendIpLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '1 h'), prefix: 'ratelimit:otp-send:ip' })
+  : null;
+export const otpSendEmailLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(6, '1 h'), prefix: 'ratelimit:otp-send:email' })
+  : null;
+
+// Login OTP code guesses: 20 per IP per 10 minutes, 10 per challenge per 10 minutes.
+export const otpVerifyIpLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, '10 m'), prefix: 'ratelimit:otp-verify:ip' })
+  : null;
+export const otpVerifyChallengeLimiter = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '10 m'), prefix: 'ratelimit:otp-verify:challenge' })
+  : null;
+
 // Best-effort client IP extraction: Vercel (and most reverse proxies) set
 // x-forwarded-for as "client, proxy1, proxy2" — the first entry is the
 // original client. Falls back to a constant so unit-of-work still groups

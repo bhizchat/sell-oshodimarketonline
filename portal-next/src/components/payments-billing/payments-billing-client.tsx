@@ -239,6 +239,14 @@ export default function PaymentsBillingClient({
     setError('');
   }
 
+  // Lets a canceled-but-still-active card subscriber pick card or transfer
+  // again, instead of forcing them back through the same (canceled) method.
+  function handleRestartSubscription() {
+    setMethod('card');
+    setRenewing(true);
+    setError('');
+  }
+
   async function handleConfirmCancel() {
     setCanceling(true);
     setCancelError('');
@@ -414,12 +422,21 @@ export default function PaymentsBillingClient({
               </div>
 
               {cancelAtPeriodEnd ? (
-                <div className="flex items-start gap-2 rounded-[10px] border border-[#f4b740]/35 bg-[#f4b740]/10 p-2.5 px-3 text-[0.76rem]">
-                  <span className="shrink-0">⏰</span>
-                  <span>
-                    Your subscription is canceled and won&apos;t renew. You&apos;ll keep access until{' '}
-                    <strong>{accessUntil ? formatDate(new Date(accessUntil)) : 'your current period ends'}</strong>.
+                <div className="flex flex-col items-start gap-2.5 rounded-[10px] border border-[#f4b740]/35 bg-[#f4b740]/10 p-2.5 px-3 text-[0.76rem]">
+                  <span className="flex items-start gap-2">
+                    <span className="shrink-0">⏰</span>
+                    <span>
+                      Your subscription is canceled and won&apos;t renew. You&apos;ll keep access until{' '}
+                      <strong>{accessUntil ? formatDate(new Date(accessUntil)) : 'your current period ends'}</strong>.
+                    </span>
                   </span>
+                  <button
+                    type="button"
+                    onClick={handleRestartSubscription}
+                    className="rounded-[9px] bg-[#1e8b4a] px-4 py-2 text-[0.78rem] font-bold text-white hover:bg-[#197a40]"
+                  >
+                    Restart Subscription
+                  </button>
                 </div>
               ) : confirmingCancel ? (
                 <div className="rounded-[10px] border border-[#e2554a]/30 bg-[#e2554a]/8 p-3 px-3.5">
